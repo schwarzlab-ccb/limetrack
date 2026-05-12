@@ -9,7 +9,7 @@ bleach==6.2.0
 Brotli==1.2.0
 certifi==2025.8.3
 charset-normalizer==3.3.0
-Django==5.2.13
+Django==5.2.14
 django-appconf==1.0.6
 django-compressor==4.4
 django-libsass==0.9
@@ -45,9 +45,9 @@ pydantic==2.6.3
 pydantic-settings==2.2.1
 pydantic_core==2.16.3
 PySocks==1.7.1
-pytest==8.2.0
+pytest==9.0.3
 python-dateutil==2.8.2
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 python-rapidjson==1.12
 pytz==2023.3.post1
 rcssmin==1.1.1
