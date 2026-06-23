@@ -91,7 +91,6 @@ INSTALLED_APPS = [
     "backend.gui",
     "tempus_dominus",
     'markdownify.apps.MarkdownifyConfig',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
 ]
 
 TEMPUS_DOMINUS_DATE_FORMAT = "YYYY-MM-DD"
