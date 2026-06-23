@@ -1,11 +1,11 @@
 aiohappyeyeballs==2.6.1
-aiohttp==3.13.4
+aiohttp==3.14.0
 aiosignal==1.4.0
 annotated-types==0.6.0
 asgiref==3.8.1
 async-timeout==4.0.3
 attrs==23.2.0
-bleach==6.2.0
+bleach==6.4.0
 Brotli==1.2.0
 certifi==2025.8.3
 charset-normalizer==3.3.0
@@ -66,7 +66,7 @@ trio-websocket==0.12.2
 tritonclient==2.36.0
 typing_extensions==4.14.1
 tzdata==2023.3
-ujson==5.12.1
+ujson==5.13.0
 urllib3==2.7.0
 webdriver-manager==4.0.1
 webencodings==0.5.1
