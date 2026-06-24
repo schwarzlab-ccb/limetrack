@@ -20,13 +20,18 @@
 
 
 <div class="containerino">
-  <div id="main_form" class="vh-100 form-containerino">
+  <div id="main_form" class=" form-containerino">
     
     <h2> Dashboard <i class="bi bi-clipboard-data"></i>  </h2> 
     <hr>
     
+    {%load plotly_dash%}
+
+    <div id="dashboard_container">
+    {%plotly_app name="Dashboard"%}
+    </div>
     {% comment %} <iframe src="http://localhost:8050" style="height: 90%;" class="container-fluid"> </iframe> {% endcomment %}
-    
+{% comment %}     
     <div class="row mt-5">
       <div class="col-1"> </div>
       {% for figure in row1%}
@@ -65,7 +70,7 @@
         </div>
       {% endfor %}
       <div class="col-1"> </div>
-    </div>
+    </div> {% endcomment %}
 
   </div>
 

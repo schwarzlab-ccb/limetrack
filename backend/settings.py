@@ -91,6 +91,8 @@ INSTALLED_APPS = [
     "backend.gui",
     "tempus_dominus",
     'markdownify.apps.MarkdownifyConfig',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'bootstrap4'
 ]
 
 TEMPUS_DOMINUS_DATE_FORMAT = "YYYY-MM-DD"
@@ -105,6 +107,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    # dash
+    'django_plotly_dash.middleware.BaseMiddleware',
+    'django_plotly_dash.middleware.ExternalRedirectionMiddleware',
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -249,8 +255,41 @@ MARKDOWNIFY = {
     }
 }
 
-# for dash
+# DASH
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Staticfiles finders for locating dash app assets and related files
+
+STATICFILES_FINDERS = [
+
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+
+    'django_plotly_dash.finders.DashAssetFinder',
+    'django_plotly_dash.finders.DashComponentFinder',
+    'django_plotly_dash.finders.DashAppDirectoryFinder',
+]
+
+
+# Plotly components containing static content that should
+# be handled by the Django staticfiles infrastructure
+
+PLOTLY_COMPONENTS = [
+
+    # Common components (ie within dash itself) are automatically added
+
+    # django-plotly-dash components
+    'dpd_components',
+    # static support if serving local assets
+    'dpd_static_support',
+
+    # Other components, as needed
+    'dash_bootstrap_components',
+]
+
+
+
+# DASH END
 
 FILE_TRACEBACK_DIR = "/tmp"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2000000000
