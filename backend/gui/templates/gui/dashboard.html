@@ -1,12 +1,8 @@
 {% extends './base.html' %}
 
-
-
-
 {% block title %}
   Dashboard
 {% endblock title %}
-
 
 {% block header %}
 <h1>
@@ -17,8 +13,6 @@
 
 {% block content %}
 
-
-
 <div class="containerino">
   <div id="main_form" class="form-containerino">
     
@@ -28,50 +22,8 @@
     {%load plotly_dash%}
 
     <div id="dashboard_container">
-    {%plotly_app name="Dashboard"%}
+      {%plotly_app name="Dashboard"%}
     </div>
-    {% comment %} <iframe src="http://localhost:8050" style="height: 90%;" class="container-fluid"> </iframe> {% endcomment %}
-{% comment %}     
-    <div class="row mt-5">
-      <div class="col-1"> </div>
-      {% for figure in row1%}
-        <div class="col-5">
-          <h5> {{figure.heading}} </h5>
-          {% autoescape off %}
-          {{figure.plot}}
-          {% endautoescape %}
-        </div>
-      {% endfor %}
-      <div class="col-1"> </div>
-    </div>
-
-    <div class="row mt-5">
-      <div class="col-1"> </div>
-      {% for figure in row2%}
-        <div class="col-5">
-          <h5> {{figure.heading}} </h5>
-          {% autoescape off %}
-          {{figure.plot}}
-          {% endautoescape %}
-        </div>
-      {% endfor %}
-      <div class="col-1"> </div>
-    </div>
-
-
-    <div class="row mt-5">
-      <div class="col-1"> </div>
-      {% for figure in row3%}
-        <div class="col-5">
-          <h5> {{figure.heading}} </h5>
-          {% autoescape off %}
-          {{figure.plot}}
-          {% endautoescape %}
-        </div>
-      {% endfor %}
-      <div class="col-1"> </div>
-    </div> {% endcomment %}
-
   </div>
 
 </div>
