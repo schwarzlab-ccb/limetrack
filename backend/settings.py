@@ -294,3 +294,7 @@ PLOTLY_COMPONENTS = [
 FILE_TRACEBACK_DIR = "/tmp"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2000000000
 # PASSWORD_RESET_TIMEOUT = 
+
+PLOTLY_DASH = {
+    "view_decorator": "django_plotly_dash.access.login_required",
+}
