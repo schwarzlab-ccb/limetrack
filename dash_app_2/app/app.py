@@ -1,6 +1,5 @@
-from dash_app_2.app.callbacks import main, patient, samples, clinical
 import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html
+from dash import dcc, html
 from django_plotly_dash import DjangoDash
 
 app = DjangoDash(name="Dashboard",
@@ -9,14 +8,19 @@ app = DjangoDash(name="Dashboard",
                  suppress_callback_exceptions=True                 
                  )
 
-main.register_callbacks()
-clinical.register_callbacks()
-patient.register_callbacks()
-samples.register_callbacks()
-
 app.layout = dbc.Container(
     [
+        dcc.Store(id="initial-app-state"),
         dcc.Store(id="app-state", storage_type="local"),
+        dcc.Store(id="app-state-ready", data=0),
+        dcc.Store(id="render-trigger", data=0),
+        dcc.Store(id="filter-event-tissue-types"),
+        dcc.Store(id="filter-event-entities"),
+        dcc.Store(id="filter-event-entities-columns"),
+        dcc.Store(id="filter-event-patients"),
+        dcc.Store(id="filter-event-patient-journey-y-axis"),
+        dcc.Store(id="filter-event-clinical-download"),
+        dcc.Store(id="filter-event-clinical-patients"),
         dcc.Tabs(
             [
                 dcc.Tab(label="Samples", value="sample-tracker-tab"),
@@ -24,6 +28,7 @@ app.layout = dbc.Container(
                 dcc.Tab(label="Patient", value="patients-tab"),
             ],
             id="main-tabs",
+            value="sample-tracker-tab",
             className="flex-fill"
         ),
         html.Div(

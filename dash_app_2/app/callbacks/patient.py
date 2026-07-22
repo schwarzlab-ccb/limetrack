@@ -1,43 +1,41 @@
 from dash_app_2.app.components.general import make_card
 from dash_app_2.app.utils.state_management import AppState
-from dash import Input, Output, State, callback
+from dash import Input, Output, State, no_update
 from dash_app_2.app.components.patient import (
     patient_samples_tumor_cell_content,
     patient_journey_samples_and_therapies,
 )
 
 
-def register_callbacks():
-    @callback(
+def register_callbacks(app):
+    @app.callback(
         Output('dropdown-patients', 'options'),
         Output('dropdown-patients', 'value'),
-        Input("app-state", "data"),
-        prevent_initial_call=True
-    )
-    def on_app_state_changed_patients_dropdown(app_state: dict):
-        state = AppState(app_state)
-        filter_ = state.get_filter("patients")
-
-        return filter_.options, filter_.selected
-    
-    @callback(
         Output("dropdown-patient-journey-y-axis", "options"),
         Output("dropdown-patient-journey-y-axis", "value"),
-        Input("app-state", "data"),
+        Input("render-trigger", "data"),
+        State("app-state", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_y_axis_dropdown(app_state: dict):
+    def initialise_filter_controls(_render_trigger: int, app_state: dict):
         state = AppState(app_state)
-        filter_ = state.get_filter("patient-journey-y-axis")
+        patients = state.get_filter("patients")
+        y_axis = state.get_filter("patient-journey-y-axis")
 
-        return filter_.options, filter_.selected
+        return (
+            patients.options,
+            patients.selected[0] if patients.selected else None,
+            y_axis.options,
+            y_axis.selected[0] if y_axis.selected else None,
+        )
     
-    @callback(
+    @app.callback(
         Output("stack-cards-patient", "children"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_cards(app_state: dict):
+    def on_app_state_changed_cards(app_state: dict, _render_trigger: int):
         state = AppState(app_state)
         df = state.get_dataset("redcap-base")
         df_filtered = df.loc[
@@ -66,53 +64,49 @@ def register_callbacks():
 
         return cards
     
-    @callback(
-        Output("app-state", "data", allow_duplicate=True),
-        State("app-state", "data"),
+    @app.callback(
+        Output("filter-event-patients", "data"),
         Input("dropdown-patients", "value"),
         prevent_initial_call=True
     )
-    def on_patients_dropdown_value_changed(app_state: dict, value: str):
-        state = AppState(app_state)
+    def on_patients_dropdown_value_changed(value: str):
+        if value is None:
+            return no_update
 
-        if value is not None:
-            state.update_filter_selection("patients", value)
-
-        return state.state
+        return {"name": "patients", "selected": [value]}
     
-    @callback(
-        Output("app-state", "data", allow_duplicate=True),
-        State("app-state", "data"),
+    @app.callback(
+        Output("filter-event-patient-journey-y-axis", "data"),
         Input("dropdown-patient-journey-y-axis", "value"),
         prevent_initial_call=True
     )
-    def on_y_axis_dropdown_value_changed(app_state: dict, value: str):
-        state = AppState(app_state)
-        
-        if value is not None:
-            state.update_filter_selection("patient-journey-y-axis", value)
+    def on_y_axis_dropdown_value_changed(value: str):
+        if value is None:
+            return no_update
 
-        return state.state
+        return {"name": "patient-journey-y-axis", "selected": [value]}
 
 
-    @callback(
+    @app.callback(
         Output('bar-patient-samples', 'figure'),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def update_sample_plot(app_state: dict):
+    def update_sample_plot(app_state: dict, _render_trigger: int):
         state = AppState(app_state)
         filter_ = state.get_filter("patients")
         df_patient = state.get_dataset("patient-timepoint")
 
         return patient_samples_tumor_cell_content(filter_.selected[0], df_patient)
 
-    @callback(
+    @app.callback(
         Output('patient-journey', 'figure'),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def update_therapies_plot(app_state: dict):
+    def update_therapies_plot(app_state: dict, _render_trigger: int):
         state = AppState(app_state)
         selected_patient = state.get_filter("patients").selected[0]
         filter_selected_y_axis = state.get_filter("patient-journey-y-axis")

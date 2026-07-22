@@ -22,8 +22,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from typing import Any
 
-# from dash_app.app import app
-from dash_app_2.app import app
 
 import logging
 

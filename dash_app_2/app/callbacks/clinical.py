@@ -1,17 +1,18 @@
 from dash_app_2.app.components.clinical import make_age_histogram
 from dash_app_2.app.utils.state_management import AppState
-from dash import Output, Input, State, callback
+from dash import Output, Input, State, no_update
 from dash_app_2.app.components.general import make_card
 
 
 
-def register_callbacks():
-    @callback(
+def register_callbacks(app):
+    @app.callback(
         Output("stack-cards-clinical", "children"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_cards_redcap(app_state: dict):
+    def on_app_state_changed_cards_redcap(app_state: dict, _render_trigger: int):
         state = AppState(app_state)
         df_therapies = state.get_dataset("redcap-therapy")
         df_samples = state.get_dataset("redcap-samples")
@@ -42,26 +43,17 @@ def register_callbacks():
         return cards
     
 
-    @callback(
-        Output("dropdown-clinical-pid", "options"),
-        Output("dropdown-clinical-pid", "value"),
-        Input("app-state", "data"),
-        prevent_clinical_call=True
-    )
-    def on_app_state_changed_clinical_pid_dropwdown(app_state: dict):
-        state = AppState(app_state)
-        filter_ = state.get_filter("clinical-patients")
-        
-        return filter_.options, filter_.selected
-
-    @callback(
+    @app.callback(
         Output("grid-clinical-patients", "rowData"),
         Output("grid-clinical-patients", "selectedRows"),
         Output("grid-clinical-patients", "columnDefs"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_clinical_patients_grid(app_state: dict):
+    def on_app_state_changed_clinical_patients_grid(
+        app_state: dict, _render_trigger: int
+    ):
         state = AppState(app_state)
         filter_ = state.get_filter("clinical-patients")
         df = state.get_dataset("redcap-base")
@@ -93,13 +85,16 @@ def register_callbacks():
             columns_defs,
         )
     
-    @callback(
+    @app.callback(
         Output("grid-clinical-therapies", "rowData"),
         Output("grid-clinical-therapies", "columnDefs"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_clinical_therapy_grid(app_state: dict):
+    def on_app_state_changed_clinical_therapy_grid(
+        app_state: dict, _render_trigger: int
+    ):
         state = AppState(app_state)
         df = state.get_dataset("redcap-therapy")
         filter_ = state.get_filter("clinical-patients")
@@ -115,13 +110,16 @@ def register_callbacks():
             columns_defs,
         )
     
-    @callback(
+    @app.callback(
         Output("grid-clinical-samples", "rowData"),
         Output("grid-clinical-samples", "columnDefs"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_clinical_samples_grid(app_state: dict):
+    def on_app_state_changed_clinical_samples_grid(
+        app_state: dict, _render_trigger: int
+    ):
         state = AppState(app_state)
         df = state.get_dataset("redcap-samples")
         filter_ = state.get_filter("clinical-patients")
@@ -138,23 +136,30 @@ def register_callbacks():
             columns_defs,
         )
     
-    @callback(
+    @app.callback(
         Output("dropdown-clinical-download", "options"),
         Output("dropdown-clinical-download", "value"),
-        Input("app-state", "data"),
+        Input("render-trigger", "data"),
+        State("app-state", "data"),
+        prevent_initial_call=True,
     )
-    def on_app_state_changed_clinical_download_dropdown(app_state: dict):
+    def initialise_filter_controls(
+        _render_trigger: int, app_state: dict
+    ):
         state = AppState(app_state)
         filter_ = state.get_filter("clinical-download-selection")
 
         return filter_.options, filter_.selected
     
-    @callback(
+    @app.callback(
         Output("histogram-clinical-age-at-diagnosis", "figure"),
         Input("app-state", "data"),
+        Input("render-trigger", "data"),
         prevent_initial_call=True
     )
-    def on_app_state_changed_age_at_diagnosis(app_state: dict):
+    def on_app_state_changed_age_at_diagnosis(
+        app_state: dict, _render_trigger: int
+    ):
         state = AppState(app_state)
         df = state.get_dataset("redcap-base")
         filter_ = state.get_filter("clinical-patients")
@@ -163,50 +168,42 @@ def register_callbacks():
 
         return figure
         
-    @callback(
-        Output("app-state", "data", allow_duplicate=True),
-        State("app-state", "data"),
+    @app.callback(
+        Output("filter-event-clinical-download", "data"),
         Input("dropdown-clinical-download", "value"),
         prevent_initial_call=True
     )
-    def on_dropdown_clinical_download_selection_changed(
-        app_state: dict, value: list[str]
-    ):
-        state = AppState(app_state)
-        state.update_filter_selection("clinical-download-selection", value)
+    def on_dropdown_clinical_download_selection_changed(value: list[str]):
+        if value is None:
+            return no_update
 
-        return state.state
+        return {"name": "clinical-download-selection", "selected": value}
 
-    @callback(
-        Output("app-state", "data", allow_duplicate=True),
-        State("app-state", "data"),
+    @app.callback(
+        Output("filter-event-clinical-patients", "data"),
         Input("grid-clinical-patients", "virtualRowData"),
+        State("grid-clinical-patients", "filterModel"),
         prevent_initial_call=True
     )
-    def on_grid_clinical_patients_rows_changed(app_state: dict, data: list[dict]):
-        state = AppState(app_state)
+    def on_grid_clinical_patients_rows_changed(
+        data: list[dict] | None, filter_model: dict | None
+    ):
+        if data is None or (not data and not filter_model):
+            return no_update
 
-        if data is not None:
-            pids = list(
-                map(
-                    lambda row: row["pid"],
-                    data
-                )
-            )
+        pids = [row["pid"] for row in data]
 
-            state.update_filter_selection("clinical-patients", pids)
-
-        return state.state
+        return {"name": "clinical-patients", "selected": pids}
     
-    @callback(
+    @app.callback(
         Output("grid-clinical-patients", "exportDataAsCsv"),
         Output("grid-clinical-therapies", "exportDataAsCsv"),
         Output("grid-clinical-samples", "exportDataAsCsv"),
-        State("app-state", "data"),
         Input("button-clinical-download", "n_clicks"),
+        State("app-state", "data"),
         prevent_initial_call=True
     )
-    def on_download_button_clicked(app_state: dict, n_clicks: int):
+    def on_download_button_clicked(n_clicks: int, app_state: dict):
         state = AppState(app_state)
         filter_ = state.get_filter("clinical-download-selection")
         selected = filter_.selected

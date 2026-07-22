@@ -37,7 +37,10 @@ layout = dbc.Row(
                             dbc.Col(
                                 dcc.Graph(id="patient-journey")
                             ),
-                            dcc.Dropdown(id="dropdown-patient-journey-y-axis")
+                            dcc.Dropdown(
+                                id="dropdown-patient-journey-y-axis",
+                                value="Localisation",
+                            )
                         ],
                         class_name="mt-3 border rounded p-2 pb-4 shadow",
                     )

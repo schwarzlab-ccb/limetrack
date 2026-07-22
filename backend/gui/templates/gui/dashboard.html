@@ -19,10 +19,10 @@
     <h2> Dashboard <i class="bi bi-clipboard-data"></i>  </h2> 
     <hr>
     
-    {%load plotly_dash%}
+    {% load plotly_dash %}
 
     <div id="dashboard_container">
-      {%plotly_app name="Dashboard"%}
+      {% plotly_app name="Dashboard" ratio=1 %}
     </div>
   </div>
 

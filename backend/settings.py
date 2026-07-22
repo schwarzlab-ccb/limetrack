@@ -92,7 +92,8 @@ INSTALLED_APPS = [
     "tempus_dominus",
     'markdownify.apps.MarkdownifyConfig',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
-    'bootstrap4'
+    'bootstrap4',
+    'dpd_static_support',
 ]
 
 TEMPUS_DOMINUS_DATE_FORMAT = "YYYY-MM-DD"
@@ -285,6 +286,7 @@ PLOTLY_COMPONENTS = [
 
     # Other components, as needed
     'dash_bootstrap_components',
+    'dash_ag_grid',
 ]
 
 
@@ -297,4 +299,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 2000000000
 
 PLOTLY_DASH = {
     "view_decorator": "django_plotly_dash.access.login_required",
+    "serve_locally": True,
 }

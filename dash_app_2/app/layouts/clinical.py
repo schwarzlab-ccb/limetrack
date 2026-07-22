@@ -21,7 +21,9 @@ layout = dbc.Row(
                                 html.Div(
                                     [
                                         dcc.Dropdown(
-                                            id="dropdown-clinical-download", multi=True
+                                            id="dropdown-clinical-download",
+                                            value=["Patients", "Therapies", "Samples"],
+                                            multi=True,
                                         )
                                     ]
                                 ),
