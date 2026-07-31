@@ -29,11 +29,12 @@ app.layout = dbc.Container(
             ],
             id="main-tabs",
             value="sample-tracker-tab",
-            className="flex-fill"
+            className="flex-shrink-0"
         ),
         html.Div(
             id="main-content-div",
-            className="mt-3 flex-fill"
+            className="mt-3 flex-grow-1 overflow-auto",
+            style={"minHeight": 0},
         )
     ],   
     id="main-container",
