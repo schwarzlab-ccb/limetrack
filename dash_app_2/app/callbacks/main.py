@@ -43,9 +43,11 @@ def register_callbacks(app):
                 "Sclab Status": "sclab_status"
             }  
         )
+        patient_list = list(set(df_timepoints.patient_identifier.unique().tolist() + df_base_redcap.pid.unique().tolist()))
+        patient_list.sort()
         state.add_filter(
             "patients", 
-            list(set(df_timepoints.patient_identifier.unique().tolist() + df_base_redcap.pid.unique().tolist())).sort(),
+            patient_list,
             [df_timepoints.patient_identifier.unique().tolist()[0]]
         )
         state.add_filter(
