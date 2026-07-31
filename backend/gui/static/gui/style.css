@@ -34,6 +34,16 @@ ol {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+iframe {
+    position: relative !important;
+}
+
+#dashboard_container > div {
+    padding-bottom: 0% !important;
+    height: 100vh !important;
+    position: static !important;
+}
+
 .form-row{
     position: relative;
     font-family: Arial, Helvetica, sans-serif;

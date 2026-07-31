@@ -22,7 +22,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from typing import Any
 
-# from . import plotly_app
 
 import logging
 

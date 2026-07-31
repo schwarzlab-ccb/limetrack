@@ -5,6 +5,7 @@ services:
     volumes:
       - ./logs:/logs
       - ./backend:/backend
+      - ./dash_app_2:/dash_app_2
       - ./manage.py:/manage.py:ro
       - ./requirements.txt:/requirements.txt
       - ./env:/env

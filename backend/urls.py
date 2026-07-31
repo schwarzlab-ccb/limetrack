@@ -55,6 +55,7 @@ urlpatterns = [
     path("imprint/", ImprintView.as_view(), name="imprint"),
     path("faqs/", FAQView.as_view(), name="faqs"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("django_plotly_dash/", include("django_plotly_dash.urls")),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", log_out, name="logout"),
     path("search/", SearchView.as_view(), name="search"),
