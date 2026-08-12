@@ -27,12 +27,6 @@ layout = dbc.Row(
                         )
                     ),
                     dbc.Row(
-                        dbc.Col(
-                            dcc.Graph(id="bar-patient-samples")
-                        ),
-                        class_name="border rounded p-2 shadow"
-                    ),
-                    dbc.Row(
                         [
                             dbc.Col(
                                 dcc.Graph(id="patient-journey")
@@ -43,7 +37,13 @@ layout = dbc.Row(
                             )
                         ],
                         class_name="mt-3 border rounded p-2 pb-4 shadow",
-                    )
+                    ),
+                    dbc.Row(
+                        dbc.Col(
+                            dcc.Graph(id="bar-patient-samples")
+                        ),
+                        class_name="border rounded p-2 shadow"
+                    ),
                 ],
                 fluid=True,
                 id="container-dashboard",

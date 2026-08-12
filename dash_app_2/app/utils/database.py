@@ -16,6 +16,7 @@ class Sample(Base):
     tissue_type: Mapped[str]
     recruiting_site: Mapped[str]
     sex: Mapped[str]
+    died: Mapped[str]
     spl_status: Mapped[str]
     sclab_status: Mapped[str]
     sampling_date: Mapped[datetime]
@@ -42,6 +43,7 @@ def get_patient_timepoint_data() -> pd.DataFrame:
         Sample.patient_identifier,
         Sample.recruiting_site,
         Sample.sex,
+        Sample.died,
         Sample.spl_status,
         Sample.sclab_status,
         Sample.sampling_date,

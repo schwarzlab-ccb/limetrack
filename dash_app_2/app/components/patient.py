@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-
+import datetime
 
 def patient_journey_samples_and_therapies(
     patient: str,
@@ -12,11 +12,29 @@ def patient_journey_samples_and_therapies(
     df_patient_filtered = df_patient[
         df_patient["patient_identifier"] == patient
     ].sort_values("sampling_date")
+
+    death_dates = df_patient_filtered[(df_patient_filtered["died"] != "NA")]["died"]
+    if len(death_dates) > 0:
+        death_date = death_dates.iloc[0]
+    else:
+        death_date = None
     
+
     df_patient_therapies = df_redcap[
         (df_redcap["patient_identifier"] == patient) & 
-        (df_redcap["therapy_kind"] != "Operation")
+        (df_redcap["therapy_kind"] != "Operation") & 
+        (df_redcap["therapy_start"] != "") & 
+        (df_redcap["therapy_start"] != df_redcap["therapy_end"])
     ].sort_values("therapy_start")
+
+
+    one_day_therapies_df = df_redcap[
+        (df_redcap["patient_identifier"] == patient) & 
+        (df_redcap["therapy_kind"] != "Operation") &
+        (df_redcap["therapy_start"] == df_redcap["therapy_end"]) &
+        (df_redcap["therapy_start"] != "")
+    ].sort_values("therapy_start")
+
 
     operation_df = df_redcap[
         (df_redcap["patient_identifier"] == patient) & 
@@ -35,29 +53,45 @@ def patient_journey_samples_and_therapies(
             x=operation_df["therapy_start"],
             y=[f"Surgery {i}" for i in range(1, len(operation_df) + 1)],
             mode="markers",
-            marker=dict(symbol="x", size=12),
+            marker=dict(symbol="x", size=14),
             name="Surgery")
+
+    one_day_therapies = go.Scatter(
+            x=one_day_therapies_df["therapy_start"],
+            y=[f"One day therapy {i}" for i in range(1, len(one_day_therapies_df) + 1)],
+            mode="markers",
+            marker=dict(symbol="hexagon", size=14),
+            name="One day therapy")
 
     therapies_timeline = px.timeline(
         df_patient_therapies,
         x_start="therapy_start",
         x_end="therapy_end",
         color="therapy_kind",
+        color_discrete_map={"Radiotherapie": "#2E8B57", "Chemotherapie": "#DC143C"},
+        hover_data={"therapy_kind": False, "therapy_start": True, "therapy_end": True, "therapy_detail": True},
         y=[f"Therapy {i}" for i in range(1, len(df_patient_therapies) + 1) ],
-        opacity=0.7
+        opacity=0.7,
     )
 
-    data = [samples, operations, *[trace for trace in therapies_timeline.data]]
+    data = [samples, operations, one_day_therapies, *[trace for trace in therapies_timeline.data]]
 
     layout = go.Layout(
         legend=dict(
             traceorder="reversed"
         ),
         title=dict(
-            text="Patient Journey")
+            text="Patient History")
     )
 
     fig = go.Figure(data=data, layout=layout)
+
+    if death_date:
+        fig.add_vline(x=death_date, line_dash="dash", annotation_text=f"Date of death: {death_date}")
+
+    fig.update_xaxes(
+        # tickformat="%d.%m.%Y",
+        hoverformat="%Y-%m-%d")
 
     return fig
 

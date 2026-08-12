@@ -38,7 +38,7 @@ function filterTable() {
   tr = table.getElementsByTagName("tr");
 
   // get all column names
-  ths = tr[0].getElementsByTagName("th");
+  ths = table.getElementsByTagName("th");
 
   // indexes of columns to be filtered
   var indexes = Array.from(activeFilters.keys());
@@ -47,6 +47,20 @@ function filterTable() {
     searchIndex = key;
     searchFilter = value;
   });
+
+  // highlight column headers with active filter
+  for (i = 1; i < ths.length; i++) {
+    button = ths[i].getElementsByTagName("button").item(0)
+
+    if (indexes.includes(i)){
+      ths[i].classList.replace("bg-light", "bg-dark-subtle")
+      button.classList.replace("bg-light", "bg-dark-subtle")
+    }
+    else if (button != null) {
+      ths[i].classList.replace("bg-dark-subtle", "bg-light")
+      button.classList.replace("bg-dark-subtle", "bg-light")
+    }   
+  }
 
   // Loop through all table rows, and hide those who can be found in the active filters map
   // and don't match the search filter

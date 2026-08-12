@@ -72,6 +72,7 @@ def get_therapies_start_to_end() -> pd.DataFrame:
         'fields[1]': 'th_details',
         "fields[2]": "th_start_d",
         "fields[3]": "th_end_d",
+        "fields[4]": "th_trt_c",
         "rawOrLabel": "label",
         "rawOrLabelHeaders": "raw",
         "exportCheckboxLabel": "false",
@@ -82,8 +83,8 @@ def get_therapies_start_to_end() -> pd.DataFrame:
     df = get_data(data)
     df.reset_index(inplace=True)
     
-    df = df.loc[:, ["pid", "th_details", "th_start_d", "th_end_d"]]
-    df.columns = ["patient_identifier", "therapy_kind", "therapy_start", "therapy_end"]
+    df = df.loc[:, ["pid", "th_details", "th_start_d", "th_end_d", "th_trt_c"]]
+    df.columns = ["patient_identifier", "therapy_kind", "therapy_start", "therapy_end", "therapy_detail"]
 
     return df
 

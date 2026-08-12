@@ -13,6 +13,8 @@ services:
         condition: service_healthy
     command: >
       /bin/sh -c "
+      python manage.py makemigrations gui;
+      python manage.py migrate gui;
       python manage.py makemigrations;
       python manage.py migrate;
       python manage.py collectstatic --noinput;
@@ -20,10 +22,10 @@ services:
       "
 
   db:
-    image: postgres
+    image: postgres:16
     restart: unless-stopped
     volumes:
-      - ./pg_data:/var/lib/postgresql
+      - ./pg_data:/var/lib/postgresql/data
     env_file:
       - path: env/development.env
         required: true
