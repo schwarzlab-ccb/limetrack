@@ -20,12 +20,12 @@ channels_redis==4.3.0
 charset-normalizer==3.3.0
 click==8.3.3
 constantly==23.10.4
-cryptography==49.0.0
+cryptography>=50.0.0
 daphne==4.2.2
 dash==4.4.0
 dash-bootstrap-components==2.0.4
 dash_ag_grid==35.2.0
-Django==5.2.15
+Django==5.2.16
 django-appconf==1.0.6
 django-bootstrap4==26.1
 django-compressor==4.4
