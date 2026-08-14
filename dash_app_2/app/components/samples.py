@@ -67,6 +67,7 @@ def make_samples_entity_histogram(
     ]
     selected_column = filter_columns.selected[0]
     color_mapping = filter_columns.mappings
+    df = df.sort_values(by="entity")
 
     if color_mapping is None:
         color_mapping = {}
@@ -81,6 +82,7 @@ def make_samples_entity_histogram(
             mapped_name: selected_column
         },
         category_orders={
+            "entity": list(sorted(df["entity"].unique())),
             mapped_name: list(sorted(df[mapped_name].unique()))
         },
         title = "Samples per Entity"

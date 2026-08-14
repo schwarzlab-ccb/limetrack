@@ -3,6 +3,17 @@ import plotly.express as px
 import pandas as pd
 import datetime
 
+
+color_map = {"Radiotherapie": "#2E8B57", 
+             "Chemotherapie": "#DC143C",
+             "Keine Therapie": "#FFEDED",
+             "sonstige Therapie": "#F6FF00",
+             "zielgerichtete Therapie": "#0026FF",
+             }
+
+def map_color(therapy: str):
+    return color_map.get(therapy) or "#A5A2A2"
+
 def patient_journey_samples_and_therapies(
     patient: str,
     selected_y_axis: str,
@@ -56,12 +67,18 @@ def patient_journey_samples_and_therapies(
             marker=dict(symbol="x", size=14),
             name="Surgery")
 
+    # therapy_colors = one_day_therapies_df["therapy_kind"].map(colors)
+
+    # print(df_patient_therapies["therapy_start"])
+    # print(df_patient_therapies["therapy_end"])
+
     one_day_therapies = go.Scatter(
             x=one_day_therapies_df["therapy_start"],
-            y=[f"One day therapy {i}" for i in range(1, len(one_day_therapies_df) + 1)],
+            y=one_day_therapies_df["therapy_kind"],
             mode="markers",
-            marker=dict(symbol="hexagon", size=14),
-            name="One day therapy")
+            marker=dict(symbol="hexagon", size=14, color=one_day_therapies_df["therapy_kind"].map(lambda y: map_color(y))),
+            name="One day therapy"
+            )
 
     therapies_timeline = px.timeline(
         df_patient_therapies,
@@ -74,7 +91,10 @@ def patient_journey_samples_and_therapies(
         opacity=0.7,
     )
 
-    data = [samples, operations, one_day_therapies, *[trace for trace in therapies_timeline.data]]
+    data = [samples,
+            operations,
+            one_day_therapies, 
+            *[trace for trace in therapies_timeline.data]]
 
     layout = go.Layout(
         legend=dict(
@@ -91,6 +111,7 @@ def patient_journey_samples_and_therapies(
 
     fig.update_xaxes(
         # tickformat="%d.%m.%Y",
+        type="date",
         hoverformat="%Y-%m-%d")
 
     return fig

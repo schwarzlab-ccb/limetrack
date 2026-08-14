@@ -7,9 +7,9 @@ layout = dbc.Row(
         dbc.Col(
             dbc.Stack(
                 [
-                    html.H4("Filter"),
+                    html.H4("Select patient"),
                     dcc.Dropdown(id="dropdown-patients")
-                ], 
+                ],  
                 class_name="gap-1 p-2 border rounded shadow h-100"
             ), 
             id="col-sidebar",
@@ -31,6 +31,7 @@ layout = dbc.Row(
                             dbc.Col(
                                 dcc.Graph(id="patient-journey")
                             ),
+                            html.H6("Display samples'"),
                             dcc.Dropdown(
                                 id="dropdown-patient-journey-y-axis",
                                 value="Localisation",

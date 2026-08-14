@@ -37,6 +37,7 @@ layout = dbc.Row(
                     dbc.Row(
                         dbc.Col([
                             dcc.Graph(id="histogram-samples-entity"),
+                            html.H6("Color-code columns by"),
                             dcc.Dropdown(id="dropdown-columns"),
                         ]),
                         class_name="mt-3 border rounded p-2 pb-4 shadow"
