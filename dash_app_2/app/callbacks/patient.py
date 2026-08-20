@@ -38,8 +38,9 @@ def register_callbacks(app):
     def on_app_state_changed_cards(app_state: dict, _render_trigger: int):
         state = AppState(app_state)
         df = state.get_dataset("redcap-base")
+        pid = state.get_filter("patients").selected
         df_filtered = df.loc[
-            (df.pid.isin(state.get_filter("patients").selected))
+            (df.pid.isin(pid))
         ]
         cards = []
 
@@ -61,6 +62,25 @@ def register_callbacks(app):
                     "Documentation Status", df_filtered.documentation_complete.iloc[0]
                 )
             ]
+        else:
+            cards =  [
+                make_card(
+                    "Patient Identifier", pid[0]
+                ),
+                make_card(
+                    "Sex", "No entry"
+                ),
+                make_card(
+                    "Age at Diagnosis", "No entry"
+                ),
+                make_card(
+                    "Diagnosis", "No entry"
+                ),
+                make_card(
+                    "Documentation Status", "No entry"
+                )
+            ]
+
 
         return cards
     
