@@ -2,12 +2,14 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 import datetime
-
+from dash_app_2.app.components.general import statistical_info_card
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
 color_map = {"Radiotherapie": "#2E8B57", 
              "Chemotherapie": "#DC143C",
              "Keine Therapie": "#FFEDED",
-             "sonstige Therapie": "#F6FF00",
+             "sonstige Therapie": "#FFB300",
              "zielgerichtete Therapie": "#0026FF",
              }
 
@@ -35,6 +37,7 @@ def patient_journey_samples_and_therapies(
         (df_redcap["patient_identifier"] == patient) & 
         (df_redcap["therapy_kind"] != "Operation") & 
         (df_redcap["therapy_start"] != "") & 
+        (df_redcap["therapy_end"] != "") & 
         (df_redcap["therapy_start"] != df_redcap["therapy_end"])
     ].sort_values("therapy_start")
 
@@ -67,10 +70,6 @@ def patient_journey_samples_and_therapies(
             marker=dict(symbol="x", size=14),
             name="Surgery")
 
-    # therapy_colors = one_day_therapies_df["therapy_kind"].map(colors)
-
-    # print(df_patient_therapies["therapy_start"])
-    # print(df_patient_therapies["therapy_end"])
 
     one_day_therapies = go.Scatter(
             x=one_day_therapies_df["therapy_start"],
@@ -85,7 +84,7 @@ def patient_journey_samples_and_therapies(
         x_start="therapy_start",
         x_end="therapy_end",
         color="therapy_kind",
-        color_discrete_map={"Radiotherapie": "#2E8B57", "Chemotherapie": "#DC143C"},
+        color_discrete_map=color_map,
         hover_data={"therapy_kind": False, "therapy_start": True, "therapy_end": True, "therapy_detail": True},
         y=[f"Therapy {i}" for i in range(1, len(df_patient_therapies) + 1) ],
         opacity=0.7,
@@ -198,3 +197,40 @@ def patient_samples_tumor_cell_content(patient: str, df_patient: pd.DataFrame) -
     fig.update_yaxes(range=[0, 100], minallowed=0, maxallowed=100)
 
     return fig
+
+
+def overall_survival(patient,
+                     df_redcap,
+                     df_patient):
+
+    
+    first_diagnosis_date_df_unfiltered = df_redcap[df_redcap["patient_identifier"] == patient]
+
+    first_diagnosis_date_df = first_diagnosis_date_df_unfiltered["first_diagnosis_date"]
+
+    df_patient_filtered = df_patient[
+        df_patient["patient_identifier"] == patient
+        ]
+
+    if len(first_diagnosis_date_df) > 0:
+        first_diagnosis_date = first_diagnosis_date_df.iloc[0]
+    else:
+        first_diagnosis_date = None
+
+    death_dates = df_patient_filtered[(df_patient_filtered["died"] != "NA")]["died"]
+    if len(death_dates) > 0:
+        death_date = death_dates.iloc[0]
+    else:
+        death_date = None
+
+    if not first_diagnosis_date:
+        return statistical_info_card("Overall Survival:", "No data")
+
+    if not death_date:
+        delta = relativedelta(date.today(), datetime.strptime(first_diagnosis_date, '%Y-%m-%d').date())
+    else:
+        delta = relativedelta(datetime.strptime(death_date, '%Y-%m-%d').date(), datetime.strptime(first_diagnosis_date, '%Y-%m-%d').date())
+
+    overall_survival = f"{delta.months + delta.years * 12} months, {delta.days} days"
+
+    return statistical_info_card(str(overall_survival), "Overall Survival")

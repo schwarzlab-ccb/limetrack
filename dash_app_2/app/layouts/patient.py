@@ -4,14 +4,27 @@ from dash import dcc, html
 
 layout = dbc.Row(
     [
-        dbc.Col(
+        dbc.Col([
             dbc.Stack(
                 [
                     html.H4("Select patient"),
                     dcc.Dropdown(id="dropdown-patients")
                 ],  
-                class_name="gap-1 p-2 border rounded shadow h-100"
-            ), 
+                class_name="gap-1 p-2 border rounded shadow"
+            ),
+            html.Div(
+                [dbc.Stack(
+                        [
+                            html.H4("Statistical Information"),
+                            dbc.Stack(
+                                id="overall-survival-patient",
+                                )
+                        ],
+                        class_name="gap-1 p-2 border rounded shadow mt-5"
+                        )
+                ]
+                )
+            ],
             id="col-sidebar",
             width=3,
         ),

@@ -43,6 +43,19 @@ def make_card(text: str, value: int | str) -> dbc.Card:
 
     return card
 
+def statistical_info_card(text: str, value: int | str) -> dbc.Card:
+    card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(str(value), className="text-nowrap"),
+                html.P(text, className="text-nowrap")
+            ],
+        ),
+        class_name="flex-fill shadow"
+    )
+
+    return card
+
 def make_dropdown_with_header(header: str, dropdown: dcc.Dropdown) -> html.Div:
     component = html.Div([
         html.H6(header),

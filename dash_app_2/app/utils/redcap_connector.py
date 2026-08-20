@@ -88,6 +88,30 @@ def get_therapies_start_to_end() -> pd.DataFrame:
 
     return df
 
+def get_first_diagnosis_date() -> pd.DataFrame:
+    data = {
+        "content": "record",
+        "action": "export",
+        "format": "json",
+        "type": "flat",
+        "csvDelimiter": "",
+        "fields[0]": "pid",
+        'fields[1]': 'mh_diagnosis_d',
+        "rawOrLabel": "label",
+        "rawOrLabelHeaders": "raw",
+        "exportCheckboxLabel": "false",
+        "exportSurveyFields": "false",
+        "exportDataAccessGroups": "false",
+        "returnFormat": "json"
+    }
+    df = get_data(data)
+    df.reset_index(inplace=True)
+    
+    df = df.loc[:, ["pid", "mh_diagnosis_d"]]
+    df.columns = ["patient_identifier", "first_diagnosis_date"]
+
+    return df
+
 def get_therapy_data() -> pd.DataFrame:
     data = {
         'content': 'record',

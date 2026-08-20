@@ -16,6 +16,7 @@ def register_callbacks(app):
         df_therapy_redcap = redcap_connector.get_therapy_data()
         df_timepoints = database.get_patient_timepoint_data() 
         df_samples_redcap = redcap_connector.get_samples()
+        df_first_diagnosis_date = redcap_connector.get_first_diagnosis_date()
 
         state.add_filter(
             "entities",
@@ -79,6 +80,7 @@ def register_callbacks(app):
         state.add_dataset("redcap-samples", df_samples_redcap)
         state.add_dataset("patient-timepoint", df_timepoints)
         state.add_dataset("redcap-base", df_base_redcap)
+        state.add_dataset("redcap-first-diagnosis", df_first_diagnosis_date)
 
         return state.state
     

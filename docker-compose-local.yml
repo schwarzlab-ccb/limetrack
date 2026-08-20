@@ -22,7 +22,7 @@ services:
       "
 
   db:
-    image: postgres:16
+    image: postgres
     restart: unless-stopped
     volumes:
       - ./pg_data:/var/lib/postgresql/data

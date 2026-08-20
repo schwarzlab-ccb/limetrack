@@ -4,6 +4,7 @@ from dash import Input, Output, State, no_update
 from dash_app_2.app.components.patient import (
     patient_samples_tumor_cell_content,
     patient_journey_samples_and_therapies,
+    overall_survival
 )
 
 
@@ -83,7 +84,22 @@ def register_callbacks(app):
 
 
         return cards
-    
+
+    @app.callback(
+        Output("overall-survival-patient", "children"),
+        Input("app-state", "data"),
+        Input("render-trigger", "data"),
+        prevent_initial_call=True
+    )
+    def on_app_state_changed_overall_survival(app_state: dict, _render_trigger: int):
+        state = AppState(app_state)
+        df_redcap = state.get_dataset("redcap-first-diagnosis")
+        df_patient = state.get_dataset("patient-timepoint")
+        pid = state.get_filter("patients").selected[0]
+
+        return overall_survival(pid, df_redcap, df_patient)
+
+
     @app.callback(
         Output("filter-event-patients", "data"),
         Input("dropdown-patients", "value"),
