@@ -49,7 +49,7 @@ def register_callbacks(app):
         state.add_filter(
             "patients", 
             patient_list,
-            [df_timepoints.patient_identifier.unique().tolist()[0]]
+            [patient_list[0]]
         )
         state.add_filter(
             "patient-journey-y-axis",

@@ -30,15 +30,16 @@ def make_filterable_pie(
 
     return figure
 
-def make_card(text: str, value: int | str) -> dbc.Card:
+def make_card(text: str, value: int | str, color=None) -> dbc.Card:
     card = dbc.Card(
         dbc.CardBody(
             [
-                html.H1(str(value), className="text-nowrap"),
+                html.H1(str(value), className="fs-1 text-nowrap"),
                 html.P(text, className="text-nowrap")
             ],
         ),
-        class_name="flex-fill shadow"
+        class_name="flex-fill shadow",
+        style={"opacity": 0.9, "background-color": color},
     )
 
     return card

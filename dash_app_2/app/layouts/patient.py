@@ -5,26 +5,33 @@ from dash import dcc, html
 layout = dbc.Row(
     [
         dbc.Col([
-            dbc.Stack(
-                [
-                    html.H4("Select patient"),
-                    dcc.Dropdown(id="dropdown-patients")
-                ],  
-                class_name="gap-1 p-2 border rounded shadow"
-            ),
-            html.Div(
-                [dbc.Stack(
-                        [
-                            html.H4("Statistical Information"),
-                            dbc.Stack(
-                                id="overall-survival-patient",
+                dbc.Stack(
+                    [
+                        dbc.Stack(
+                            [
+                                html.H4("Select patient"),
+                                dcc.Dropdown(id="dropdown-patients"),
+                            ],
+                            gap=1,
+                        ),
+                        dbc.Stack(
+                            [
+                                html.H4("Statistical Information"),
+                                dbc.Stack(
+                                    id="overall-survival-patient",
+                                    ),
+                                
+                            ],
+                            gap=1,
+                        ),
+                        dbc.Stack(
+                            [
+                                html.Hr(),
+                                dcc.Graph(id="bar-patient-samples", className="border rounded")],
                                 )
-                        ],
-                        class_name="gap-1 p-2 border rounded shadow mt-5"
-                        )
-                ]
-                )
-            ],
+                    ],
+                    className="border rounded shadow h-100 p-2 gap-1"),            
+                ],
             id="col-sidebar",
             width=3,
         ),
@@ -36,7 +43,7 @@ layout = dbc.Row(
                             id="stack-cards-patient",
                             direction="horizontal",
                             gap=3,
-                            class_name="d-flex p-0 mb-3"
+                            class_name="d-flex p-0"
                         )
                     ),
                     dbc.Row(
@@ -51,12 +58,6 @@ layout = dbc.Row(
                             )
                         ],
                         class_name="mt-3 border rounded p-2 pb-4 shadow",
-                    ),
-                    dbc.Row(
-                        dbc.Col(
-                            dcc.Graph(id="bar-patient-samples")
-                        ),
-                        class_name="border rounded p-2 shadow"
                     ),
                 ],
                 fluid=True,

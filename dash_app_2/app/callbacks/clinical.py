@@ -2,8 +2,8 @@ from dash_app_2.app.components.clinical import make_age_histogram
 from dash_app_2.app.utils.state_management import AppState
 from dash import Output, Input, State, no_update
 from dash_app_2.app.components.general import make_card
-
-
+from dash_app_2.app.utils.column_name_mapper import (get_simple_ag_grid_column_defs,
+                                                     get_clinical_patients_ag_grid_column_defs)
 
 def register_callbacks(app):
     @app.callback(
@@ -30,9 +30,9 @@ def register_callbacks(app):
         ]
 
         cards = [
-            make_card("Patients", len(filter_.selected)),
-            make_card("Therapies", df_th_filtered.shape[0]),
-            make_card("Samples", df_sam_filtered.shape[0]),
+            make_card("Patients", len(filter_.selected), '#636EFA'),
+            make_card("Therapies", df_th_filtered.shape[0], '#EF553B'),
+            make_card("Samples", df_sam_filtered.shape[0], '#00CC96'),
             make_card(
                 "Patients Fully Documented",
                 df_pat_filtered.loc[
@@ -57,24 +57,7 @@ def register_callbacks(app):
         state = AppState(app_state)
         filter_ = state.get_filter("clinical-patients")
         df = state.get_dataset("redcap-base")
-        columns_defs = [
-            {
-                "field": column, 
-                "filter": "agNumberColumnFilter", 
-                "filterParams": {
-                    "buttons": ["reset", "apply"],
-                },
-                "maxWidth": 100
-            }
-            if column == "age_at_diagnosis"
-            else {
-                "field": column,
-                "filterParams": {
-                    "buttons": ["reset", "apply"],
-                },
-            }
-            for column in df.columns
-        ]
+        columns_defs = get_clinical_patients_ag_grid_column_defs(df)
         selected_rows = df.loc[
             df.pid.isin(filter_.selected)
         ].to_dict("records")
@@ -98,9 +81,8 @@ def register_callbacks(app):
         state = AppState(app_state)
         df = state.get_dataset("redcap-therapy")
         filter_ = state.get_filter("clinical-patients")
-        columns_defs = [ 
-            {"field": column} for column in df.columns
-        ]
+        columns_defs = get_simple_ag_grid_column_defs(df)
+
         df = df.loc[
             df.pid.isin(filter_.selected)
         ]
@@ -124,9 +106,7 @@ def register_callbacks(app):
         df = state.get_dataset("redcap-samples")
         filter_ = state.get_filter("clinical-patients")
 
-        columns_defs = [ 
-            {"field": column} for column in df.columns
-        ]
+        columns_defs = get_simple_ag_grid_column_defs(df)
         df = df.loc[
             df.pid.isin(filter_.selected)
         ]

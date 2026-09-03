@@ -6,11 +6,11 @@ from dash_app_2.app.components.general import statistical_info_card
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
-color_map = {"Radiotherapie": "#2E8B57", 
-             "Chemotherapie": "#DC143C",
+color_map = {"Radiotherapie": "#EF553B", 
+             "Chemotherapie": "#00CC96",
              "Keine Therapie": "#FFEDED",
-             "sonstige Therapie": "#FFB300",
-             "zielgerichtete Therapie": "#0026FF",
+             "sonstige Therapie": "#AB63FA",
+             "zielgerichtete Therapie": "#FFA15A",
              }
 
 def map_color(therapy: str):
@@ -224,7 +224,7 @@ def overall_survival(patient,
         death_date = None
 
     if not first_diagnosis_date:
-        return statistical_info_card("Overall Survival:", "No data")
+        return statistical_info_card("No data", "Overall Survival")
 
     if not death_date:
         delta = relativedelta(date.today(), datetime.strptime(first_diagnosis_date, '%Y-%m-%d').date())

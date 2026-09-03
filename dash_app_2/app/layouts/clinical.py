@@ -64,6 +64,12 @@ layout = dbc.Row(
                                     },
                                     columnSize="autoSize",
                                     className="h-100 shadow",
+                                    dashGridOptions={
+                                        "theme": {
+                                            "function": """themeQuartz.withParams({
+                                                headerBackgroundColor: '#636EFA',
+                                            })"""
+                                        }}
                                 ),
                                 width=5,
                                 class_name="p-2",
@@ -81,6 +87,12 @@ layout = dbc.Row(
                                                 },
                                                 columnSize="autoSize",
                                                 className="h-100 shadow",
+                                                dashGridOptions={
+                                                    "theme": {
+                                                        "function": """themeQuartz.withParams({
+                                                            headerBackgroundColor: '#EF553B',
+                                                        })"""
+                                                    }}
                                             ),
                                             class_name="p-2",
                                         ),
@@ -97,6 +109,12 @@ layout = dbc.Row(
                                                 },
                                                 columnSize="autoSize",
                                                 className="h-100 shadow",
+                                                dashGridOptions={
+                                                    "theme": {
+                                                        "function": """themeQuartz.withParams({
+                                                            headerBackgroundColor: '#00CC96',
+                                                        })"""
+                                                    }}
                                             ),
                                             class_name="p-2",
                                         ),
