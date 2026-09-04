@@ -30,9 +30,9 @@ def register_callbacks(app):
         ]
 
         cards = [
-            make_card("Patients", len(filter_.selected), '#636EFA'),
-            make_card("Therapies", df_th_filtered.shape[0], '#EF553B'),
-            make_card("Samples", df_sam_filtered.shape[0], '#00CC96'),
+            make_card("Patients", len(filter_.selected), "#636DFADA"),
+            make_card("Therapies", df_th_filtered.shape[0], "#EF563BDA"),
+            make_card("Samples", df_sam_filtered.shape[0], "#00CC96DA"),
             make_card(
                 "Patients Fully Documented",
                 df_pat_filtered.loc[

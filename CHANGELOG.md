@@ -1,10 +1,10 @@
 ## Change Log
 
-### 2026-08
+### 2026-09
 - **COMPLETE DASHBOARD REDESIGN**
     - New dashboard with 3 sections: Samples, Clinical, Patient
     - Clinical & Patient integrate the SATURN3 RedCap data into the SATURN3 Data Platform
-- **New**
+- **Also new**
     - Highlighted column headers in Sample Table when a column filter is active.
 
 

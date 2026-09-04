@@ -67,7 +67,7 @@ layout = dbc.Row(
                                     dashGridOptions={
                                         "theme": {
                                             "function": """themeQuartz.withParams({
-                                                headerBackgroundColor: '#636EFA',
+                                                headerBackgroundColor: '#636EFADA',
                                             })"""
                                         }}
                                 ),
@@ -90,7 +90,7 @@ layout = dbc.Row(
                                                 dashGridOptions={
                                                     "theme": {
                                                         "function": """themeQuartz.withParams({
-                                                            headerBackgroundColor: '#EF553B',
+                                                            headerBackgroundColor: '#EF553BDA',
                                                         })"""
                                                     }}
                                             ),
@@ -112,7 +112,7 @@ layout = dbc.Row(
                                                 dashGridOptions={
                                                     "theme": {
                                                         "function": """themeQuartz.withParams({
-                                                            headerBackgroundColor: '#00CC96',
+                                                            headerBackgroundColor: '#00CC96DA',
                                                         })"""
                                                     }}
                                             ),

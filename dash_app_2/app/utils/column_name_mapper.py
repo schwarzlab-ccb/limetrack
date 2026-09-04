@@ -17,7 +17,7 @@ redcap_column_mapping = {
         "th_resp_txt": "Other Therapy Response",
         "th_pd_start_d": "Date of Progression",
         "th_trt_end_reas": "End of Therapy Reason",
-        "th_dth_d": "Death Death",
+        "th_dth_d": "Date of Death",
         "therapie_complete": "Therapy Complete",
         "tr_s3finding": "SATURN3 Sample Code",
         "tr_visit_d": "Tissue Sampling Date",
