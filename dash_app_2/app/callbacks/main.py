@@ -34,14 +34,16 @@ def register_callbacks(app):
                 "Recruiting Site",
                 "Sex",
                 "Spl Status",
-                "Sclab Status"
+                "Sclab Status",
+                "Localisation"
             ],
             ["Recruiting Site",],
             {
                 "Recruiting Site": "recruiting_site",
                 "Sex": "sex",
                 "Spl Status": "spl_status",
-                "Sclab Status": "sclab_status"
+                "Sclab Status": "sclab_status",
+                "Localisation": "localisation"
             }  
         )
         patient_list = list(set(df_timepoints.patient_identifier.unique().tolist() + df_base_redcap.pid.unique().tolist()))
