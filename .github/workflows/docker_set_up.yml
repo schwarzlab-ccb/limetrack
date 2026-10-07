@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Create Dash Config
+      run: mv dash_app_2/config/_config.toml dash_app_2/config/config.toml
     - name: Docker Compose
       run: docker compose -f docker-compose-actions.yml -f docker-compose-develop.yml up --remove-orphans --force-recreate -d
     - name: Install firefox

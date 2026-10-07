@@ -12,4 +12,4 @@ wheels/
 # Devcontainer
 .devcontainer/
 data
-config/
+config/config.toml

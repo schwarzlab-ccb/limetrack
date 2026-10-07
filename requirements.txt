@@ -116,7 +116,7 @@ urllib3==2.8.0
 webdriver-manager==4.0.1
 webencodings==0.5.1
 websocket-client==1.8.0
-Werkzeug==3.1.8
+Werkzeug==3.1.9
 whitenoise==6.5.0
 wsproto==1.2.0
 yarl==1.17.2
