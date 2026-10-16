@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from pydantic import BaseModel, ValidationError, EmailStr
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse, HttpRequest
+from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.db.utils import IntegrityError
 from dataclasses import dataclass
@@ -84,6 +85,12 @@ class UsersBulkView(LoginRequiredMixin, TemplateView):
         return json.dumps(response)
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        if "admins" not in [group.name for group in request.user.groups] or request.user.username != "root":
+            name = "Unauthorized"
+            description = "Bulk user creation needs admin permissions."
+            errors = self._append_and_log_error(name, description, errors)
+            return HttpResponse(content=self._build_response_json(created, errors))
+
         data: Optional[str] = request.POST.get("data")
         errors: list[Error] = []
         created: list[str] = []
