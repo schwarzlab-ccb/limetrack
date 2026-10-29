@@ -1,6 +1,11 @@
-from ..models import HistopathologicalSample, end_of_model_section_dict
-from ..utils.fields import SampleCodeField, SampleCodeWidget
+from ..models import (HistopathologicalSample,
+                      SAMPLE_CODE_NAME, PATIENT_IDENTIFIER_NAME)
 from ..utils import model_to_form
+from ..config.sections import verbose_section_names, section_dict
+from ..config.sample_table_interface import (column_filters_verbose_names,
+                                             exclude_from_ui)
+from ..config.widgets import custom_widgets
+from ..config.general import PROJECT_NAME
 from tempus_dominus.widgets import DatePicker  # type: ignore
 from django.forms import ModelForm
 from django import forms
@@ -18,7 +23,8 @@ date_pickers = {}
 
 # exclude primary key "ID" & "created" field by slicing
 # for we dont want them displayed or edited
-all_fields = HistopathologicalSample._meta.get_fields()[1:-1]
+all_fields = [field for field in HistopathologicalSample._meta.get_fields()
+              if field.name.lower() not in exclude_from_ui]
 
 for field in all_fields:
     all_field_verbose_names.append(field.verbose_name)
@@ -33,12 +39,8 @@ for field in all_fields:
             })
 
 
-# create dictionary with lists of fields for the
-# individual groups or data model sections
-field_dict = model_to_form.create_field_dict(
-    model_section_dict=end_of_model_section_dict,
-    all_fields=all_fields,
-    all_field_names=all_field_names)
+# create dictionary for quickly finding a field by its name
+field_dict = {field.name: field for field in all_fields}
 
 
 class FlexibleSampleForm(ModelForm):
@@ -49,51 +51,17 @@ class FlexibleSampleForm(ModelForm):
     required_css_class = "required"
     # error_css_class = "error-field"
 
-    saturn3_sample_code = SampleCodeField(
-        required=True, widget=SampleCodeWidget(), label="SATURN3 Sample Code")
-
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
-        model_to_form.adapt_form(self, user, field_dict)
+        model_to_form.adapt_form(self, user, section_dict, field_dict)
 
     class Meta:
         model = HistopathologicalSample
         # exclude = ["id"]
         fields = all_field_names
 
-        widgets = {
-            # include tooltips into widgets
-            "patient_identifier": forms.TextInput(
-                attrs={"data-toggle": "tooltip",
-                       "data-placement": "top",
-                       "title": "5-digit SATURN3 pseudonym \
-                        (by Treuhandstelle Freiburg)",
-                       "onchange": "autoFillPatient(this.value)"}
-                       ),
-
-            "corresponding_organoid": forms.Select(
-                attrs={"data-toggle": "tooltip",
-                       "data-placement": "top",
-                       "title": "Generated from the same biopsy/tissue piece"}
-                       ),
-
-            "dv_200": forms.TextInput(
-                attrs={"data-toggle": "tooltip",
-                       "data-placement": "top",
-                       "title": "Quality measure: RNA \
-                        molecules larger than 200 bp [%]"}
-                        ),
-
-            # widgets with additional features
-            "tissue_quality": forms.NumberInput(
-                attrs={
-                    "data-toggle": "tooltip",
-                    "data-placement": "top",
-                    "title": "Value  between 1 and 5",
-                    'min': 1, 'max': 5, 'type': 'number'}
-            ),
-        } | date_pickers
+        widgets = custom_widgets | date_pickers
 
 
 def validate_file_extension(value):
@@ -117,46 +85,13 @@ class GroupFilterForm(forms.Form):
     customly defined sets of data fields.
     The actual filtering is handled in samples_view.py
     """
-    recruiter = forms.BooleanField(initial=True,
-                                   required=False,
-                                   label="Recruiter")
 
-    tum = forms.BooleanField(initial=True,
-                             required=False,
-                             label="TUM")
-
-    spl = forms.BooleanField(initial=True,
-                             required=False,
-                             label="SPL")
-
-    scopenlab = forms.BooleanField(initial=True,
-                                   required=False,
-                                   label="ScLab")
-
-    spatial = forms.BooleanField(initial=True,
-                                 required=False,
-                                 label="Spatial")
-
-    liquidbiopsy = forms.BooleanField(initial=True,
-                                      required=False,
-                                      label="LB")
-
-    omicspath = forms.BooleanField(initial=True,
-                                   required=False,
-                                   label="ODCF")
-
-    scmultiome = forms.BooleanField(
-        initial=True,
-        required=False,
-        label="ScMultiome")
-
-    wgs = forms.BooleanField(initial=True,
-                             required=False,
-                             label="WGS")
-
-    variantcalling = forms.BooleanField(initial=True,
-                                        required=False,
-                                        label="Variant Calling")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, label in {**verbose_section_names,
+                            **column_filters_verbose_names}.items():
+            self.fields[name] = forms.BooleanField(
+                initial=True, required=False, label=label)
 
 
 class LoginForm(forms.Form):
@@ -165,10 +100,18 @@ class LoginForm(forms.Form):
 
 
 class SearchForm(forms.Form):
+
+    sample_code_verbose_name = \
+        HistopathologicalSample._meta.get_field(SAMPLE_CODE_NAME).verbose_name
+    patient_identifier_verbose_name = \
+        HistopathologicalSample._meta.get_field(
+            PATIENT_IDENTIFIER_NAME).verbose_name
+
     radio_select = forms.ChoiceField(
         choices=[
-            ("Patient Identifier", "SATURN3 Patient Identifier"),
-            ("SATURN3 Sample Code", "SATURN3 Sample Code")],
+            (patient_identifier_verbose_name,
+             f"{PROJECT_NAME} {patient_identifier_verbose_name}"),
+            (sample_code_verbose_name, sample_code_verbose_name)],
         label="Search for",
         widget=forms.RadioSelect())
 

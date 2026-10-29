@@ -14,6 +14,7 @@ from ...settings import (
     EMAIL_HOST_USER,
     EMAIL_BASE_URL,
 )
+from ..config.general import SERVER_URL
 import logging
 
 
@@ -33,7 +34,7 @@ def on_user_created(sender: User, instance: User, created: bool, **kwargs):
             validate_email(instance.username)
             mail = tmp.render(context={
                     "user": instance,
-                    "site_name": "saturn3.uniklinik-freiburg.de",
+                    "site_name": SERVER_URL,
                     "base_url": EMAIL_BASE_URL,
                     "path": EMAIL_ACCOUNT_CREATION_PATH,
                     "uidb": uidb,

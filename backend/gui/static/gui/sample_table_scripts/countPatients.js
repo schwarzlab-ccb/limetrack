@@ -7,20 +7,20 @@ function countPatients() {
   const allRows = document.getElementById("data-rows").children;
   const headRow = document.getElementById("head-row").children;
 
-  var SAT3Index;
+  var patientIndex;
   for (let i = 0; i < headRow.length; i++) {
     var value = headRow[i].getAttribute("name");
-    if (value == "SATURN3 Sample Code") {
-      SAT3Index = i;
+    if (value == JSON.parse(document.getElementById('patient_identifier_name_script').textContent)) {
+      patientIndex = i;
       break;
     }
   }
-  let columnNumber = SAT3Index;
+  let columnNumber = patientIndex;
   const filteredPatients = new Set();
   const patients = new Set();
   for (let i = 0; i < allRows.length; i++) {
     if (allRows[i].children[columnNumber]){
-      let patientID = allRows[i].children[columnNumber].innerHTML.slice(4, 9);
+      let patientID = allRows[i].children[columnNumber].innerHTML;
       if (allRows[i].style.display != "none") {
         filteredPatients.add(patientID);
       }

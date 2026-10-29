@@ -1,4 +1,4 @@
-from ..forms.forms import field_dict
+from ..config.sections import section_dict
 from django.contrib.auth.models import User
 
 
@@ -14,6 +14,6 @@ def get_all_permitted_fields(user: User):
             continue
         # e.g. gui.recruiter_fields -> recruiter
         model_section = permission.split("_")[0].split(".")[1]
-        permitted_fields += field_dict[model_section]
+        permitted_fields += section_dict[model_section]
 
     return permitted_fields

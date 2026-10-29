@@ -11,39 +11,27 @@
     <div class="container">
         <div class="row mt-4">
             <div class="col-7">
-                <div class="h-100 container-homepage ">
+                <div class="h-100 container-homepage" data-default-infotext="{{ default_infotext }}">
                     <div>
                         <h2>Project Resources</h2>
                         <hr>
                     </div>
                     <div class="flex-row pb-4">
-                        <a id="saturn3" title="SATURN3 Project Homepage" href="https://saturn3.org/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/SATURN3_Logo_white_square.png' %}" width=80%% alt="SATURN3 Logo">
+                        {% for item in project_resources %}
+                        <a id="{{ item.id }}" title="{{ item.title }}" href="{{ item.url }}"
+                            type="button" data-mdb-button-init data-mdb-ripple-init
+                            class="btn btn-primary btn-square-md mt-1"
+                            data-infotext="{{ item.infotext }}"
+                            onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
+                            {% if item.image %}
+                            <img class="img-fluid" src="{% static item.image %}"
+                                    style="width: {{ item.image_width|default:'80%' }};"
+                                    alt="{{ item.title }} Logo">
+                            {% else %}
+                            <i class="bi {{ item.icon }}" style="font-size: 180%;"></i>
+                            {% endif %}
                         </a>
-                        <a  id="intranet" title="Concentris Intranet" href="https://intranet.concentris.de/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/keyways_logo_white.png' %}" width=40% alt="Concentris Intranet Logo">
-                        </a>
-                        <a  id="odcf" title="DKTK ODCF" href="https://odcf.dkfz.de/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/odcf_white.png' %}" width=80% alt="ODCF Logo">
-                        </a>
-                        <a  id="ghga" title="German Human Genome Archive" href="https://www.ghga.de/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/ghga_logo_white.png' %}" width=80% alt="GHGA Logo">
-                        </a>
-                        <a  id="redcap" title="Freiburg RedCap" href="https://zks-redcap.uniklinik-freiburg.de/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/redcap_logo_small.png' %}" width=80% alt="REDCap Logo">
-                        </a>
-                        <a  id="ecip" title="Essen Central Imaging Platform" href="https://ecip-django.saturn3.ikim.nrw/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <img class="img-fluid " src="{% static 'gui/img/logo_ume_uke.png' %}" width=80% alt="ECIP Logo">
-                        </a>
-                        <a  id="bioinfo" title="Bioinfo Analyses Docs" href="https://docs.google.com/spreadsheets/d/18K7ieTwHjgPgdKz5Al1ZDFSAR4GcVJJ_9GwcsJfxIjg" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <i class="bi bi-file-earmark-spreadsheet" style="font-size: 180%;" alt="Bioinfo Analyses Docs Icon"%></i>
-                        </a>
-                        <a  id="data-management" title="Data Management Docs" href="https://docs.google.com/document/d/1gZgJdXAoyJJO4qzAGiG6UjaLAXk5iyUU9DS-JTzCjw4/edit?tab=t.0#heading=h.c3ugf59g0kki" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <i class="bi bi-hdd-network" style="font-size: 180%;" alt="Data Management Icon"%></i>
-                        </a>
-                        <a  id="sample-tracking" title="Sample Tracking Tool" href="sample_tracking/" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-square-md mt-1" onmouseover="show_infotext(this);" onmouseout="reset_infotext()">
-                            <i class="bi bi-geo-alt-fill" style="font-size: 180%;" alt="Sample Tracking Tool Icon"%></i>
-                        </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -51,7 +39,7 @@
                 <div class="ml-2 h-100 container-homepage">
                     <h2>Info</h2>
                     <hr>
-                    <p id="homepage-infotext" ></p>
+                    <p id="homepage-infotext" data-default-infotext="{{ default_infotext }}"></p>
                 </div>
             </div>
         </div>
@@ -72,34 +60,29 @@
                                 <th>Target Group</th>
                             </tr>
                         </thead>
-                        <tr>
-                          <td><a href="https://us06web.zoom.us/j/82040863592?pwd=Nmh0enRyd01YcC9oRzlTelVNL3d6QT09">ASSWG</a></td>
-                          <td>Every second Thursday of a month, 4-5 PM</td>
-                          <td><a href="https://intranet.concentris.de/">Keyways</a></td>
-                          <td><a href="mailto:u.weber@dkfz.de">Ursula Weber</a></td>
-                          <td>ASSWG members as defined in the SATURN3 grant proposal</td>
-                        </tr>
-                        <tr>
-                          <td><a href="https://us02web.zoom.us/j/87542018537?pwd=THBGQzIyUFhtWnNtVkVRUFFtaE5Ndz09">Bioinfo JF</a></td>
-                          <td>Every second Thursday, 4-5 PM; adaption are made when in conflict with ASSWG</td>
-                          <td><a href="https://docs.google.com/document/d/1hxO3JxKN9wb9NGuMQ3gpGs7-w9m1O1wzRPJjAXfQ6jQ/edit">Google Docs</a></td>
-                          <td><a href="mailto:laura.godfrey@uk-essen.de">Laura Godfrey</a></td>
-                          <td>Every SATURN3 member interested in discussing the overall bioinformatic pipelines and ideas</td>
-                        </tr>
-                        <tr>
-                          <td><a href="https://us02web.zoom.us/j/82725636962?pwd=SlFWV2psUVNPVjFyVFpqc3ZDbHdzQT09">CRC Analysis JF</a></td>
-                          <td>Every Thursday, 5-6 PM</td>
-                          <td>Unknown</td>
-                          <td><a href="mailto:florian.heyl@dkfz.de">Florian Heyl</a></td>
-                          <td>Every SATURN3 member interested in work in progress data analysis of CRC samples</td>
-                        </tr>
-                        <tr>
-                          <td>SP3 JF</td>
-                          <td>tbd</td>
-                          <td>tbd</td>
-                          <td><a href="mailto:vivien.ullrich@uk-essen.de">Vivien Ullrich</a></td>
-                          <td>Every SATURN3 SP3 member</td>
-                        </tr>
+                            <tbody>
+                                {% for row in meetings %}
+                                <tr>
+                                    <td>
+                                        {% if row.meeting_link %}
+                                        <a href="{{ row.meeting_link }}">{{ row.meeting_link_display }}</a>
+                                        {% else %}
+                                        {{ row.meeting_link_display }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ row.date }}</td>
+                                    <td>
+                                        {% if row.protocol_link %}
+                                        <a href="{{ row.protocol_link }}">{{ row.protocol }}</a>
+                                        {% else %}
+                                        {{ row.protocol }}
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{{ row.organizer_mail }}">{{ row.organizer_name }}</a></td>
+                                    <td>{{ row.target_group }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                       </table> 
                 </div>
             </div>
@@ -121,50 +104,19 @@
 
 {% block body_scripts %}
 <script>
-    var DEFAULT_INFOTEXT = "This is the SATURN3 homepage. This platform is used for data integration, as well as tracking samples colleceted within the SATURN3 project. Here you can find the Sample Tracking Tool, the official dashboard and FAQs answering various questions around sample collection."; 
+   const INFO_ELEMENT = document.getElementById("homepage-infotext");
+   const DEFAULT_INFOTEXT = INFO_ELEMENT
+       .closest("[data-default-infotext]")
+       .dataset.defaultInfotext;
 
-    function show_infotext(element) {
-        let infotext = ""; 
-    
-        switch(element.id) {
-            case "saturn3":
-                infotext = "Official SATURN3 website.";
-                break;
-            case "odcf":
-                infotext = "ODCF (Omics IT and Data Management Core Facility) Homepage. Hosted by the DKFZ.";
-                break;
-            case "redcap":
-                infotext = "Platform to collect clinical metadata of patients and samples. Hosted by University Hospital Freiburg.";
-                break;
-            case "ecip":
-                infotext = "Essen Central Imaging Platform. Central storage of HE slides and PET/MRI images if available.";
-                break;
-            case "sample-tracking":
-                infotext = "SATURN3 Sample Tracking Tool. Adapted from the Sample Tracking Excel-Table provided by the DKFZ."
-                break;
-            case "ghga":
-                infotext = "Link to the German Human Genome Archive. Hosted and provided by the DKFZ.";
-                break;
-            case "intranet":
-                infotext = "Link to the official SATURN3 intranet. Hosted by Concentris. Here you can find official project documents - such as SOPs.";
-                break;
-            case "bioinfo":
-                infotext = "Google Docs for documentation of ongoing data analyses.";
-                break;
-            case "data-management":
-                infotext = "Google Docs for SATURN3 data management.";
-                break;
-            default:
-                infotext = DEFAULT_INFOTEXT;
-        }
-        
-        document.getElementById("homepage-infotext").textContent = infotext;
-    }
-    
-    function reset_infotext() {    
-        document.getElementById("homepage-infotext").textContent = DEFAULT_INFOTEXT;
-    }
+   function show_infotext(element) {
+       INFO_ELEMENT.textContent = element.dataset.infotext || DEFAULT_INFOTEXT;
+   }
 
-    window.onload = reset_infotext;
+   function reset_infotext() {
+       INFO_ELEMENT.textContent = DEFAULT_INFOTEXT;
+   }
+
+   window.onload = reset_infotext;
 </script>
 {% endblock body_scripts %}

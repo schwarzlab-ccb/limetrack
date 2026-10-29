@@ -15,45 +15,10 @@ from django.views.generic import TemplateView
 from typing import Any, Generator, Iterable
 from base64 import b64encode
 from io import BytesIO
-from ..forms.forms import (
-    all_field_verbose_names,
-)
+from ..forms.forms import all_field_verbose_names
+from ..config.example_sample import example_sample
 
 app_log = logging.getLogger("s3sample")
-
-# sample for csv/excel template download
-# update when model is updated
-example_sample = [
-    # recruiter
-    "München", "BSP12", "f", "2021-02-10", "S3C-BSP12-0-M1-V-R1",
-    "This is an example sat3 sample", "2021-02-10", "CTC",
-    "Blood withdrawal", "Lung", "False", "G2",
-    # tum
-    "2", "15", "59", "Comment",
-    # spl
-    "2023-12-17", "successful RNA", "Panel",
-    # sclab
-    "2023-12-17", "2023-12-17", "77",
-    "45", "successful RNA", "ATAC",
-    "True", "122", "12345", "12345", "Comment",
-    # spatial
-    "Xenium", "Xenium failed", "2023-12-19",
-    "SLIDEID981", "RUNID98124234432", "PANELID98124987412",
-    "2023-12-19", "RUNID98124987412", "PANELID98124987412",
-    "85", "Spatial Comment",
-    # lb
-    "Plasma", "lb/panel/path1", "lb/panel/path2", "sWGS",
-    "2023-12-17", "4.1", "2023-12-17",
-    "11.98", "sequencing successful",
-    # ocdf
-    "test", "2021-11-29",
-    "demultiplexed + QC", "True",
-    "/omics/odcf/project/OE0130/saturn3-sc/example/example.fastq.gz",
-    "/omics/odcf/example", "/omics/odcf/example", "/omics/odcf/example",
-    "/omics/odcf/example", "/omics/odcf/example", "/omics/odcf/example",
-    "/omics/odcf/example", "/omics/odcf/example", "/omics/odcf/example",
-    ]
-
 
 class Echo:
     """An object that implements just the write method of the file-like
@@ -68,7 +33,7 @@ class Echo:
 
 def csv_template_download_csv(request: HttpRequest):
     pseudo_buffer = Echo()
-    filename = "saturn3samples_template.csv"
+    filename = "sample_tracker_template.csv"
     data: list[Iterable[Any]] = [all_field_verbose_names, example_sample]
     writer = csv.writer(pseudo_buffer)
 
@@ -84,7 +49,7 @@ def csv_template_download_csv(request: HttpRequest):
 def csv_template_download_excel(request: HttpRequest):
     data = [example_sample]
     columns = all_field_verbose_names
-    filename = "saturn3samples_template.xlsx"
+    filename = "sample_tracker_template.xlsx"
     generator: Generator | None = None
     buffer = BytesIO()
 
@@ -116,7 +81,7 @@ class FilteredDownloadView(LoginRequiredMixin, TemplateView):
             content_type = "text/csv;base64"
 
             with BytesIO() as buffer:
-                file_name = "saturn3samples"
+                file_name = "sample_tracker_samples"
 
                 if file_type == "Excel":
                     file_name += ".xlsx"

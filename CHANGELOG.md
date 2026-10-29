@@ -6,7 +6,7 @@
     - Clinical & Patient integrate the SATURN3 RedCap data into the SATURN3 Data Platform
 - **Also new**
     - Highlighted column headers in Sample Table when a column filter is active.
-
+---
 
 ### 2026-02-04
 - **Enhancement**
@@ -14,10 +14,12 @@
 - **Bugfix**
     - Fixed incorrect display of the sample table when selecting column filters with overlapping columns.
     - Fixed filtering of empty string values within a column.
+---
 
 ### 2025-12-11
 - **Bugfix**
     - A full sample table download was not possible due to the large size of the data. Fixed.
+---
 
 ### ❗️2025-07
 - **Updated data model**  
@@ -30,11 +32,12 @@
 - **Links to SATURN3 resources**
     - New: Data management resource link
     - Changed: Bioinfo Analyses link icon changed
-    
+---    
 
 ### 2025-04-17
 - **New**
     - Localisation choices "Ovary", "Adrenal gland" & "Pericardium"
+---
 
 ### 2025-04-02
 

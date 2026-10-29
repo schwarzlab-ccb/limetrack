@@ -2,13 +2,15 @@
 The functions in this module take care of adapting the permissions
 and sections of the data model to the model form.
 """
-
-
 from tempus_dominus.widgets import DatePicker
 from django.db.models.fields import Field
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django import forms
+from ..config.sections import hidden_sections
+from ..config.general import SAMPLE_CODE_CUSTOM_FIELD
+from ..models import SAMPLE_CODE_NAME, HistopathologicalSample
+from ..utils.fields import SampleCodeField, SampleCodeWidget
 
 
 def fill_form_collections(all_fields: list[Field],
@@ -65,55 +67,34 @@ def create_field_dict(model_section_dict,
     return field_dict
 
 
-def adapt_form(form: ModelForm, user: User, field_dict: dict):
+def adapt_form(form: ModelForm,
+               user: User, section_dict: dict, all_fields: dict[str, Field]):
     """
     Disables the widgets of the form's fields
     depending on the user's permissions
     so unauthorized users cannot enter data,
     yet still see the fields (in a disabled state).
-    TODO: generalize
     """
 
-    if not user.has_perm("gui.recruiter_fields"):
-        for field_name in field_dict["recruiter"]:
-            disable_single_widget(form, field_name)
-            disable_required_fields(form, field_name)
+    for section in section_dict.keys():
+        if not user.has_perm(f"gui.{section}_fields"):
+            for field_name in section_dict[section]:
+                disable_single_widget(form, field_name)
+                disable_required_fields(form, field_name)
+                if section in hidden_sections:
+                    hide_field(form, field_name)
 
-    if not user.has_perm("gui.tum_fields"):
-        for field_name in field_dict["tum"]:
-            disable_single_widget(form, field_name)
-
-    if not user.has_perm("gui.spl_fields"):
-        for field_name in field_dict["spl"]:
-            disable_single_widget(form, field_name)
-
-    if not user.has_perm("gui.scopenlab_fields"):
-        for field_name in field_dict["scopenlab"]:
-            disable_single_widget(form, field_name)
-
-    if not user.has_perm("gui.spatial_fields"):
-        for field_name in field_dict["spatial"]:
-            disable_single_widget(form, field_name)
-
-    if not user.has_perm("gui.liquidbiopsy_fields"):
-        for field_name in field_dict["liquidbiopsy"]:
-            disable_single_widget(form, field_name)
-
-    if not user.has_perm("gui.omicspath_fields"):
-        for field_name in field_dict["omicspath"]:
-            disable_single_widget(form, field_name)
-            # TODO: generalize this if necessary
-            # In our form we do not
-            # want to visualize the odcf fields
-            # for not-odcf-users
-            if not field_name == "saturn3_sample_code":
-                form.fields.pop(field_name)
+    if SAMPLE_CODE_CUSTOM_FIELD:
+        form.fields[SAMPLE_CODE_NAME] = SampleCodeField(
+            required=True, widget=SampleCodeWidget(),
+            label=HistopathologicalSample._meta.get_field(
+                SAMPLE_CODE_NAME).verbose_name)
 
 
 def disable_single_widget(form: ModelForm, field_name):
     # SAT3 Sample Code field is always enabled
     # for users with write permissions.
-    if not field_name == "saturn3_sample_code":
+    if not field_name == SAMPLE_CODE_NAME:
         form.fields[field_name].widget = forms.TextInput(
             attrs={"disabled": "true"})
 
@@ -126,6 +107,11 @@ def disable_required_fields(form: ModelForm, field_name):
     then the fields must be set to not required
     in order to allow a form being submitted without said fields.
     """
-    if not field_name == "saturn3_sample_code":
+    if not field_name == SAMPLE_CODE_NAME:
         if form.fields[field_name].required:
             form.fields[field_name].required = False
+
+
+def hide_field(form: ModelForm, field_name):
+    if not field_name == SAMPLE_CODE_NAME:
+        form.fields.pop(field_name)

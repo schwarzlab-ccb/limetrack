@@ -16,12 +16,15 @@ from django.http import (
     HttpResponse,
 )
 from ..utils.permission_manager import get_all_permitted_fields
+from ..utils.fields import SampleCodeField
+from ..utils.field_name_translator import field_to_verbose
+from ..config.general import PROJECT_NAME
 from typing import Any
 from ..utils.validators import (
     check_sat3_sample_code_with_none_analyte,
     check_sat3_sample_code,
 )
-from ..models import HistopathologicalSample
+from ..models import HistopathologicalSample, SAMPLE_CODE_NAME
 from .views import (
     check_existing_entries,
     record_already_exists,
@@ -32,9 +35,11 @@ from ..forms.forms import (
     all_field_verbose_names,
     all_field_names,
     UploadForm,
-    SearchForm
+    SearchForm,
+    FlexibleSampleForm
 )
 from pathlib import Path
+from django import forms
 from time import time
 import pandas as pd
 import logging
@@ -150,9 +155,7 @@ class UploadView(LoginRequiredMixin, TemplateView):
                 # allowing yes and no
                 # as Boolean values in file upload
                 # TODO: probably can be deleted
-                if (field_name == "corresponding_organoid" or
-                        field_name == "sclab_sorting" or
-                        field_name == "s3_bucket_status"):
+                if (isinstance(FlexibleSampleForm.base_fields[field_name], forms.BooleanField)):
                     if type(value) is not str:
                         pass
                     elif value.lower() == "yes":
@@ -168,7 +171,7 @@ class UploadView(LoginRequiredMixin, TemplateView):
                 # to decompress() the field.
                 # this yet leads to errors because decompress()
                 # can only handle sample codes in the correct format
-                if field_name == "saturn3_sample_code":
+                if field_name == SAMPLE_CODE_NAME and isinstance(FlexibleSampleForm.base_fields[SAMPLE_CODE_NAME], SampleCodeField):
                     try:
                         check_sat3_sample_code(value)
                     except ValidationError:
@@ -179,9 +182,9 @@ class UploadView(LoginRequiredMixin, TemplateView):
                                            "File upload failed!",
                                            extra_tags="file")
                             msg = f"Error in row {row_number + 1}: \
-                            data of the record with SATURN3 Sample \
-                            Code: {str(row['SATURN3 Sample Code'])} \
-                            --- No valid SATURN3 Sample Code"
+                            data of the record with {PROJECT_NAME} Sample \
+                            Code: {str(row[field_to_verbose[SAMPLE_CODE_NAME]])} \
+                            --- No valid {PROJECT_NAME} Sample Code"
                             messages.error(request, msg, extra_tags="file")
                             return HttpResponseRedirect(request.path_info)
 
@@ -196,7 +199,7 @@ class UploadView(LoginRequiredMixin, TemplateView):
                 # valid
 
                 form_data = form.cleaned_data
-                sat3_code = form.cleaned_data["saturn3_sample_code"]
+                sat3_code = form.cleaned_data[SAMPLE_CODE_NAME]
 
                 user = request.user
 
@@ -242,8 +245,8 @@ class UploadView(LoginRequiredMixin, TemplateView):
                         error_list += f"{key}: {value[0]} </br>"
 
                 msg = f"Error(s) in row {row_number + 1} of your CSV-file: \
-                        The record's data with SATURN3 Sample Code \
-                        *{str(row['SATURN3 Sample Code'])}* \
+                        The record's data with {PROJECT_NAME} Sample Code \
+                        *{str(row[field_to_verbose[SAMPLE_CODE_NAME]])}* \
                         have following issues: </br>\
                         {error_list}"
                 messages.error(
@@ -255,24 +258,24 @@ class UploadView(LoginRequiredMixin, TemplateView):
         # the actual handling of the valid records
         for form in valid_forms:
             form_data = form.cleaned_data
-            saturn3_sample_code = form_data["saturn3_sample_code"]
+            sample_code = form_data[SAMPLE_CODE_NAME]
             handle_form(
                 form,
-                saturn3_sample_code,
+                sample_code,
                 form_data,
                 request,
                 "file")
             app_log.info(
                 f"{request.user} added / "
                 f"edited data for patient "
-                f"{saturn3_sample_code}")
+                f"{sample_code}")
 
         messages.success(request, "File upload successful!", extra_tags="file")
         return HttpResponseRedirect(request.path_info)
 
 
 def check_records_existence(request: HttpRequest,
-                            sat3_code: str,
+                            sample_code: str,
                             tag: str,
                             form: ModelForm,
                             update_dict: dict):
@@ -302,12 +305,12 @@ def check_records_existence(request: HttpRequest,
                                            else None)})
 
     if (HistopathologicalSample.
-            objects.filter(saturn3_sample_code=sat3_code).exists()):
+            objects.filter(**{SAMPLE_CODE_NAME: sample_code}).exists()):
 
         # no editing permissions and filled data fields -> error message
         if (not request.user.has_perm("gui.change_histopathologicalsample")):
-            if (check_existing_entries(request.user, sat3_code, update_dict)):
-                return record_already_exists(request, sat3_code,
+            if (check_existing_entries(request.user, sample_code, update_dict)):
+                return record_already_exists(request, sample_code,
                                              "file", form,
                                              request.user.groups.first())
 
@@ -315,7 +318,7 @@ def check_records_existence(request: HttpRequest,
 
         # no permission to create -> error message
         if not request.user.has_perm("gui.add_histopathologicalsample"):
-            return no_sample_code_found(request, sat3_code, tag, form)
+            return no_sample_code_found(request, sample_code, tag, form)
 
     # if there is no existing data conflicting with the input data
     return

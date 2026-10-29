@@ -7,13 +7,17 @@ from django.http import (
     HttpResponse
 )
 from typing import Any
+from ..config.project_resources import (PROJECT_RESOURCES, DEFAULT_INFOTEXT,
+                                        MEETINGS)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
     def get(self,
             request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         template_name = "gui/home.html"
-        context = {}
+        context = {"project_resources": PROJECT_RESOURCES,
+                   "default_infotext": DEFAULT_INFOTEXT,
+                   "meetings": MEETINGS}
 
         with open("CHANGELOG.md", "r") as fh:
             myfile = File(fh)

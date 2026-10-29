@@ -112,7 +112,7 @@ Sample Tracking
       {% comment %} Start of actual form {% endcomment %}
       {% for field in form %}
        {# splitting the form visually in sections for the different user groups #}
-        {% if field.name in "recruiting_site, tissue_quality, spl_received, sclab_received, spatial_method, lb_analyte_type, request_execution_of" %}
+        {% if field.name in visual_separation %}
           <hr>
         {% endif %}
 
@@ -121,7 +121,7 @@ Sample Tracking
         {# highlight errorneous field if there's been an error in the submissed form field #}
         <div id="{{field.name}}" {% if field.errors %} class="wrong_input" {% else %} class="form-row" {% endif %}> 
                 {{field.label_tag}}
-                {% if field.name == "saturn3_sample_code" %}
+                {% if field.name == sample_code_name and custom_sample_field %}
                 <div class="input-group">
                     <label class="input-group-text" for="id_saturn3_sample_code_0">S3</label>
                     {{field}}

@@ -33,13 +33,10 @@ if (exampleModal) {
     const thead = document.createElement("thead");
     const tbody = document.createElement("tbody");
 
-    // const corresponding_organoid_value = document.getElementById(
-    //   "id_corresponding_organoid"
-    // ).checked;
-
     var sat3 = "";
     for (var pair of formData.entries()) {
       if (pair[0] != "csrfmiddlewaretoken") {
+        // custom SATURN3 Sample Code
         if (pair[0].includes("saturn3_sample_code_")) {
           sat3 = sat3.concat(pair[1].toString());
 

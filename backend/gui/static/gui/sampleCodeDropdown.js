@@ -1,3 +1,6 @@
+// Here the dropdown functionality for the SATURN3 Sample Code is defined
+// Mainly to have a more annotated dropdown selection instead of just displaying single letters
+
 const entitiy = new Map([
   ["S3M", "M - Mamma"],
   ["S3C", "C - Colon"],

@@ -1,38 +1,28 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .config.sections import section_dict
 from .utils import validators
-from .utils.model_choices import (LOCALISATION_CHOICE, SITE_CHOICES,
-                                  SEX_CHOICES,
-                                  TISSUE_TYPES, INTERVENTION_TYPES,
-                                  CORRESPONDING_ORGANOID_CHOICES,
-                                  GRADING,
-                                  SPL_SEQUENCING_TYPES,
-                                  SPL_STATUS_CHOICES,
-                                  SCLAB_SEQUENCING_TYPES,
-                                  SCLAB_STATUS_CHOICES,
-                                  LB_ANALYTE_TYPES,
-                                  LB_STATUS_CHOICES,
-                                  SPATIAL_METHOD,
-                                  SPATIAL_STATUS,
-                                  LB_SEQUENCING_STATUS_CHOICES,
-                                  YES_NO_CHOICES)
+from .config.model_choices import (LOCALISATION_CHOICE, SITE_CHOICES,
+                                   SEX_CHOICES,
+                                   TISSUE_TYPES, INTERVENTION_TYPES,
+                                   CORRESPONDING_ORGANOID_CHOICES,
+                                   GRADING,
+                                   SPL_SEQUENCING_TYPES,
+                                   SPL_STATUS_CHOICES,
+                                   SCLAB_SEQUENCING_TYPES,
+                                   SCLAB_STATUS_CHOICES,
+                                   LB_ANALYTE_TYPES,
+                                   LB_STATUS_CHOICES,
+                                   SPATIAL_METHOD,
+                                   SPATIAL_STATUS,
+                                   LB_SEQUENCING_STATUS_CHOICES,
+                                   YES_NO_CHOICES)
 
 CHARFIELD_MAXLEN = 200
 
-
-# dictionary for splitting the model into sections
-# keys: sections, values: put in the last field name of each section
-# TODO: if no sections needed: handling of empty dict
-# needs to be implemented in forms, views etc.
-end_of_model_section_dict = {
-    "recruiter": "grading",
-    "tum": "comment_tumor_cell_content",
-    "spl": "spl_sequencing_type",
-    "scopenlab": "sclab_comment",
-    "spatial": "spatial_comment",
-    "liquidbiopsy": "lb_status",
-    "omicspath": "wgs_ref",
-}
+# must be name of the python variable
+SAMPLE_CODE_NAME = "saturn3_sample_code"
+PATIENT_IDENTIFIER_NAME = "patient_identifier"
 
 
 class HistopathologicalSample(models.Model):
@@ -96,21 +86,8 @@ class HistopathologicalSample(models.Model):
         official group/section name + _fields e.g. recruiter_fields
         """
 
-        permissions = [
-            ("recruiter_fields", "Recruiter fields permission"),
-            ("tum_fields", "TUM fields permission"),
-            ("spl_fields", "SPL fields permission"),
-            ("scopenlab_fields", "ScLab fields permission"),
-            ("spatial_fields", "Spatial fields permission"),
-            ("liquidbiopsy_fields", "LB fields permission"),
-            ("omicspath_fields", "OMICS fields permission"),
-        ]
-
-    # def save(self, *args, **kwargs):
-    #     exact_lb_total_isolated_cfdna = Truncator(
-    #         self.lb_total_isolated_cfdna).truncate_decimal(2)
-    #     self.lb_total_isolated_cfdna = exact_lb_total_isolated_cfdna
-    #     super().save(*args, **kwargs)
+        permissions = [(f"{section}_fields", f"{section} fields permission")
+                       for section in section_dict.keys()]
 
     # Section: Recruiter - 12 fields ###
 

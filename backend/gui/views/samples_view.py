@@ -10,11 +10,12 @@ and return only the fields that belong to given groups.
 import ast
 import logging
 
-from ..forms.forms import (
-    field_dict,
-    GroupFilterForm,
-)
-from ..models import HistopathologicalSample
+from ..utils.field_name_translator import verbose_to_field, field_to_verbose
+from ..forms.forms import GroupFilterForm
+from ..config.sections import section_dict
+from ..models import (HistopathologicalSample,
+                      PATIENT_IDENTIFIER_NAME,
+                      SAMPLE_CODE_NAME)
 
 from django.db.models.functions import Substr
 from django.views.decorators.csrf import requires_csrf_token
@@ -26,34 +27,33 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.shortcuts import render
 from typing import Any
+from ..config.sample_table_interface import (column_filters_no_group,
+                                             group_filter_extra_fields,
+                                             exclude_from_ui)
+from ..config.general import SAMPLE_CODE_CUSTOM_FIELD
 
 app_log = logging.getLogger("s3sample")
-
-# Lists of data fields for the column filters that are not filtering model
-# sections but custom views of the table.
-column_filters_no_group = {
-    "scmultiome": ["sclab_pool", "s3_bucket_status",
-                   "scrna_r1", "scrna_r2",
-                   "scatac_r1", "scatac_r2", "scatac_i2"],
-    "wgs": ["wgs_r1", "wgs_r2", "wgs_bam", "wgs_vcf", "wgs_ref"],
-    "variantcalling": ["wgs_r1", "wgs_r2", "wgs_bam", "wgs_ref"]
-}
+exclude_from_ui_verbose = [field_to_verbose[name] for name in exclude_from_ui]
+sample_code_name_verbose = field_to_verbose[SAMPLE_CODE_NAME]
+patient_identifier_name_verbose = field_to_verbose[PATIENT_IDENTIFIER_NAME]
 
 
-def adapt_list_for_group_filter_display(key, field_list: list):
+def adapt_list_for_group_filter_display(section_name, field_list: list):
     """
     Custom group filters
     If groups want to have fields displayed in the table,
     that don't belong to this group these fields can be added here.
     This only works if all other groups are filtered out.
     """
-    if key == "omicspath":
-        field_list = field_list[:1] + ["localisation"] + field_list[1:]
+    if section_name in group_filter_extra_fields:
+        field_list = group_filter_extra_fields[section_name] + field_list
     return field_list
 
 
-field_dict_for_group_filters = {key: adapt_list_for_group_filter_display(
-    key, field_dict[key]) for key in field_dict} | column_filters_no_group
+field_dict_for_group_filters = {
+    section: adapt_list_for_group_filter_display(
+        section, section_dict[section]) for section in section_dict
+        } | column_filters_no_group
 
 
 class SomeSamplesView(LoginRequiredMixin, TemplateView):
@@ -66,26 +66,36 @@ class SomeSamplesView(LoginRequiredMixin, TemplateView):
         offset = int(request.GET.get("offset", 0))
         subset = slice(offset, offset + limit)
 
-        verbose_to_field = {
-            field.verbose_name: field.name
-            for field in HistopathologicalSample._meta.get_fields()
-            if hasattr(field, "verbose_name")
-        }
+        column_names.remove(field_to_verbose[SAMPLE_CODE_NAME])
+        column_names.insert(1, field_to_verbose[SAMPLE_CODE_NAME])
+
+        print(column_names)
 
         field_names = [
             verbose_to_field[cn] for cn in column_names
         ]
+
         samples = list(
             HistopathologicalSample.objects.values(*field_names)[subset]
         )
+
+        sample_codes = [sample[SAMPLE_CODE_NAME] for sample in samples]
+
+        samples = [{field_to_verbose[key]:
+                    value for key, value in
+                    item.items()} for item in samples]
+
         has_more = len(samples) == limit
 
-        # print(type(samples))
+        sample_rows = zip(sample_codes, samples)
 
         context = {
-            "samples": samples,
+            "sample_rows": sample_rows,
             "next_offset": offset + limit if has_more else None,
             "column_names": column_names,
+            "exclude_from_ui": exclude_from_ui_verbose,
+            "sample_code_name": sample_code_name_verbose,
+            "patient_identifier_name": patient_identifier_name_verbose
         }
 
         return render(request, "gui/partials/table_row.html", context)
@@ -99,7 +109,7 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
         column_names = []
         num_samples = HistopathologicalSample.objects.count()
         num_patients = HistopathologicalSample.objects.annotate(
-            patient_code=Substr("patient_identifier", 1, 5)
+            patient_code=Substr(PATIENT_IDENTIFIER_NAME, 1, 5)
         ).values("patient_code").distinct().count()
 
         if len(request.GET) == 0:
@@ -118,12 +128,18 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
                 )
             filters = filtered_form
 
+        column_names.remove(field_to_verbose[SAMPLE_CODE_NAME])
+        column_names.insert(1, field_to_verbose[SAMPLE_CODE_NAME])
+
         context = {
             "num_samples": num_samples,
             "num_patients": num_patients,
             "column_names": column_names,
             "filters": filters,
-            "user": request.user
+            "exclude_from_ui": exclude_from_ui_verbose,
+            "user": request.user,
+            "sample_code_name": sample_code_name_verbose,
+            "patient_identifier_name": patient_identifier_name_verbose
         }
         return render(request, template_name, context=context)
 
@@ -136,16 +152,18 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
         delete_id = int(post_data["id"])
 
         if HistopathologicalSample.objects.filter(id=delete_id).exists():
+
             delete_instance = HistopathologicalSample.objects.get(id=delete_id)
+            sample_code = getattr(delete_instance, SAMPLE_CODE_NAME)
             delete_instance.delete()
             app_log.info(
                 f"{request.user} deleted "
-                f"{delete_instance.saturn3_sample_code}")
+                f"{sample_code}")
 
         filtered_form = GroupFilterForm(post_data)
         num_samples = HistopathologicalSample.objects.count()
         num_patients = HistopathologicalSample.objects.annotate(
-            patient_code=Substr("saturn3_sample_code", 4, 5)
+            patient_code=Substr(SAMPLE_CODE_NAME, 4, 5)
         ).values("patient_code").distinct().count()
 
         column_names = []
@@ -160,7 +178,10 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
             "num_samples": num_samples,
             "num_patients": num_patients,
             "filters": filters,
-            "user": request.user
+            "user": request.user,
+            "exclude_from_ui": exclude_from_ui_verbose,
+            "sample_code_name": sample_code_name_verbose,
+            "patient_identifier_name": patient_identifier_name_verbose
         }
         return render(request, template_name, context=context)
 
@@ -169,24 +190,16 @@ def get_filtered_column_names(group_filter: dict[str, Any]):
     if HistopathologicalSample.objects.count() == 0:
         return []
 
-    # If recruiter_fields are filtered out, we need to display sample code
-    # explicitly.
-    all_filters = (
-        ["id"] if group_filter["recruiter"] else ["id", "saturn3_sample_code"]
-    )
+    all_filters = ["id", SAMPLE_CODE_NAME]
     first_sample = HistopathologicalSample.objects.first()
 
-    # This part is for displaying the table with one group filter only
-    # in case some groups want an individual filtering of the columns.
-    if sum(list(group_filter.values())) == 1:
-        for group in field_dict_for_group_filters:
-            if group_filter[group]:
-                all_filters += field_dict_for_group_filters[group]
-    else:
-        for group in group_filter:
-            all_filters += field_dict_for_group_filters[group] \
-                if group_filter[group] else []
+    for group in group_filter:
+        if group_filter[group]:
+            all_filters += [field for field in
+                            field_dict_for_group_filters[group]
+                            if field not in all_filters]
 
+    # column names need to have the verbose names
     column_names = []
     for field_name in all_filters:
         column_name = first_sample._meta.get_field(field_name).verbose_name

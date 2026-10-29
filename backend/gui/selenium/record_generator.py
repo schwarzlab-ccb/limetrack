@@ -1,4 +1,4 @@
-from backend.gui.utils.model_choices import (LOCALISATION_CHOICE, SITE_CHOICES,
+from backend.gui.config.model_choices import (LOCALISATION_CHOICE, SITE_CHOICES,
                                              SEX_CHOICES,
                                              TISSUE_TYPES, INTERVENTION_TYPES,
                                              CORRESPONDING_ORGANOID_CHOICES,
@@ -14,7 +14,7 @@ from backend.gui.utils.model_choices import (LOCALISATION_CHOICE, SITE_CHOICES,
                                              SCANALYSIS_CHOICES,
                                              LB_SEQUENCING_STATUS_CHOICES)
 
-from backend.gui.utils.model_choices import (ENTITY, TISSUE_TYPE,
+from backend.gui.config.model_choices import (ENTITY, TISSUE_TYPE,
                                              STORAGE_FORMAT,
                                              ANALYTE_TYPE)
 

@@ -56,7 +56,7 @@ Samples Overview
               <label class="input-group-text" for="selectTableSearchColumn">Search</label>
               <select class="form-select" name="searchColumn" id="selectTableSearchColumn" aria-label="Example select with button addon">
               {% for key in column_names %}
-                {% if key and key != "ID" and key != "Created at" %}
+                {% if key not in exclude_from_ui %}
                   <option value="{{ key }}" >{{ key }}</option>
                 {% endif %}
               {% endfor %}
@@ -88,7 +88,7 @@ Samples Overview
           <tr id="head-row">
             {% if num_samples > 0 %}
             {% for key in column_names %}
-              {% if key and key == "ID" or key == "Created at" %}
+              {% if key in exclude_from_ui %}
                 <th hidden class="bg-light">{{ key }}</th>
                 {% else %}
                 <th name="{{key}}" class="bg-light"> {{ key }}
@@ -127,8 +127,11 @@ Samples Overview
 
 {% endblock content %}
 
+
 {% block head_scripts%}
   {% load static %}
+  {{ sample_code_name|json_script:"sample_code_name_script" }}
+  {{ patient_identifier_name|json_script:"patient_identifier_name_script" }}
   <script src="{% static 'gui/sample_table_scripts/generateColumnsFilters.js' %}"></script>
   <script src="{% static 'gui/sample_table_scripts/filtered_download.js' %}"></script>
   <script src="{% static 'gui/sample_table_scripts/deleteRecord.js' %}"></script>

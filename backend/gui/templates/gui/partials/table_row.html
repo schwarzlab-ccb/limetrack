@@ -1,8 +1,8 @@
-{% for item in samples %}
+{% for sample_code, item in sample_rows %}
 <tr>
     {% for key, value in item.items %}
         {% if key %}
-            {% if key == "id" or key == "created" %}
+            {% if key in exclude_from_ui %}
             <td hidden >{{ value }}</td>
             {% else %}
               {% load l10n %}
@@ -14,7 +14,7 @@
     {% endfor %}
     <td>
       {% if 'gui.delete_histopathologicalsample' in user.get_all_permissions or user.get_user_name == "root"%}
-      <button id="Delete {{item.saturn3_sample_code}}" type="button" onclick="deleteID({{ item.id }}, '{{csrf_token}}' )">Delete</button>
+      <button id="Delete {{sample_code}}" type="button" onclick="deleteID({{ item.ID }}, '{{csrf_token}}' )">Delete</button>
       {% endif %}
     </td>
 </tr>
