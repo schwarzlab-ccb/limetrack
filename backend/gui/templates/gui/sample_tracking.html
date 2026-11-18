@@ -199,6 +199,7 @@ Sample Tracking
 
 
 {% load static %}
+{{ custom_sample_code|json_script:"custom_sample_code_script" }}
 <script src="{% static 'gui/formConfirmModal.js' %}"></script>
 <script src="{% static 'gui/sampleCodeDropdown.js' %}"> </script>
 <script>

@@ -1,5 +1,3 @@
-const { log } = require("async");
-
 function countPatients() {
   var filteredPatientNumber;
   var patientNumber;

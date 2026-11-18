@@ -132,6 +132,7 @@ Samples Overview
   {% load static %}
   {{ sample_code_name|json_script:"sample_code_name_script" }}
   {{ patient_identifier_name|json_script:"patient_identifier_name_script" }}
+  {{ custom_sample_code|json_script:"custom_sample_code_script" }}
   <script src="{% static 'gui/sample_table_scripts/generateColumnsFilters.js' %}"></script>
   <script src="{% static 'gui/sample_table_scripts/filtered_download.js' %}"></script>
   <script src="{% static 'gui/sample_table_scripts/deleteRecord.js' %}"></script>

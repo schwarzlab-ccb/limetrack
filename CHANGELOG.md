@@ -1,5 +1,11 @@
 ## Change Log
 
+### 2026-10
+- **Sample Table**
+    - Reordered columns so that "Sample Code" is now always first. 
+
+---
+
 ### 2026-09
 - **COMPLETE DASHBOARD REDESIGN**
     - New dashboard with 3 sections: Samples, Clinical, Patient

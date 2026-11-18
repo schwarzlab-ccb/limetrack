@@ -37,6 +37,13 @@ exclude_from_ui_verbose = [field_to_verbose[name] for name in exclude_from_ui]
 sample_code_name_verbose = field_to_verbose[SAMPLE_CODE_NAME]
 patient_identifier_name_verbose = field_to_verbose[PATIENT_IDENTIFIER_NAME]
 
+context_config_varibales = {
+    "sample_code_name": sample_code_name_verbose,
+    "patient_identifier_name": patient_identifier_name_verbose,
+    "custom_sample_code": SAMPLE_CODE_CUSTOM_FIELD,
+    "exclude_from_ui": exclude_from_ui_verbose,
+    }
+
 
 def adapt_list_for_group_filter_display(section_name, field_list: list):
     """
@@ -93,10 +100,7 @@ class SomeSamplesView(LoginRequiredMixin, TemplateView):
             "sample_rows": sample_rows,
             "next_offset": offset + limit if has_more else None,
             "column_names": column_names,
-            "exclude_from_ui": exclude_from_ui_verbose,
-            "sample_code_name": sample_code_name_verbose,
-            "patient_identifier_name": patient_identifier_name_verbose
-        }
+        } | context_config_varibales
 
         return render(request, "gui/partials/table_row.html", context)
 
@@ -136,11 +140,8 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
             "num_patients": num_patients,
             "column_names": column_names,
             "filters": filters,
-            "exclude_from_ui": exclude_from_ui_verbose,
             "user": request.user,
-            "sample_code_name": sample_code_name_verbose,
-            "patient_identifier_name": patient_identifier_name_verbose
-        }
+        } | context_config_varibales
         return render(request, template_name, context=context)
 
     @method_decorator(requires_csrf_token)
@@ -179,10 +180,7 @@ class AllSamplesView(LoginRequiredMixin, TemplateView):
             "num_patients": num_patients,
             "filters": filters,
             "user": request.user,
-            "exclude_from_ui": exclude_from_ui_verbose,
-            "sample_code_name": sample_code_name_verbose,
-            "patient_identifier_name": patient_identifier_name_verbose
-        }
+        } | context_config_varibales
         return render(request, template_name, context=context)
 
 

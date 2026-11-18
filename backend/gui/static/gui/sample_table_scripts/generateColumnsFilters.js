@@ -1,3 +1,12 @@
+function generateColumnValues() {
+  const tableHead = document.querySelector("#head-row")
+  let columnDropdownButtons = tableHead.querySelectorAll('button[id*="button for"]')
+  columnDropdownButtons.forEach(function(elem, index) {
+        getColumnValues(elem.id, index);
+    });
+}
+
+
 function getColumnValues(id, index) {
   const allRows = document.getElementById("data-rows").children;
   const numberOfRows = allRows.length;
@@ -79,7 +88,8 @@ function getColumnValues(id, index) {
   dropdown.appendChild(selectAll);
 
   // append entity filters
-  if (dropdownID == "dropdown for SATURN3 Sample Code") {
+  if (dropdownID == "dropdown for ".concat(JSON.parse(document.getElementById('sample_code_name_script').textContent))
+    && JSON.parse(document.getElementById('custom_sample_code_script').textContent)) {
     addEntityFilters(dropdownID, " PDAC");
     addEntityFilters(dropdownID, " CRC");
     addEntityFilters(dropdownID, " BC");

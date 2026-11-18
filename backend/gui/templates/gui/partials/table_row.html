@@ -34,10 +34,6 @@
 {% else %}
   {% load static %}
     <script>
-      const tableHead = document.querySelector("#head-row")
-      let columnDropdownButtons = tableHead.querySelectorAll("button");
-      columnDropdownButtons.forEach(function(elem, index) {
-            getColumnValues(elem.id, index);
-        });
+        generateColumnValues()
     </script>
 {% endif %}
