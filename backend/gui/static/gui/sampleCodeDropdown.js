@@ -23,6 +23,7 @@ const storageFormat = new Map([
   ["P", "P - FFPE"],
   ["Y", "Y - Formalin"],
   ["O", "O - Sphere/Organoid"],
+  ["C", "C - 2D cultivated cells"],
 ]);
 
 const analyteType = new Map([

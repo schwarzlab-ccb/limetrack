@@ -56,6 +56,7 @@ INTERVENTION_TYPES = [
     ("Blood withdrawal", "Blood withdrawal"),
     ("Punctate", "Punctate"),
     ("Resection", "Resection"),
+    ("PDX", "PDX"),
 ]
 
 GRADING = [
@@ -160,6 +161,7 @@ STORAGE_FORMAT = [
     ("S", "S"),
     ("V", "V"),
     ("Y", "Y"),
+    ("C", "C"),
     ]
 
 ANALYTE_TYPE = [

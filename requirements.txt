@@ -6,14 +6,14 @@ anyio==4.14.2
 asgiref==3.12.1
 async-timeout==4.0.3
 attrs==23.2.0
-autobahn==26.7.1
+autobahn==26.10.1
 Automat==25.4.16
 beautifulsoup4==4.15.0
 bleach==6.4.0
 blinker==1.9.0
 brotli==1.2.1
 cbor2==6.1.3
-certifi==2025.8.3
+certifi==2026.10.18
 cffi==2.1.0
 channels==4.2.2
 channels_redis==4.3.0
@@ -34,7 +34,7 @@ django-markdownify==0.9.5
 django-plotly-dash==2.5.1
 django-redis==7.0.0
 django-tempus-dominus==5.1.2.17
-dnspython==2.7.0
+dnspython==2.9.0
 dpd-static-support==0.0.5
 dpd_components==0.2.0
 email_validator==2.2.0
@@ -59,7 +59,7 @@ Jinja2==3.1.6
 libsass==0.23.0
 Markdown==3.8.1
 MarkupSafe==3.0.3
-msgpack==1.2.1
+msgpack==1.2.3
 multidict==6.6.4
 narwhals==2.24.0
 nest-asyncio==1.6.0
@@ -98,7 +98,7 @@ setuptools==84.1.0
 six==1.16.0
 sniffio==1.3.1
 sortedcontainers==2.4.0
-soupsieve==2.9.0
+soupsieve==2.10.0
 SQLAlchemy==2.0.51
 sqlparse==0.6.0
 tenacity==8.3.0

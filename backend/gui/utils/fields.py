@@ -41,7 +41,8 @@ STORAGE_FORMAT = [
     ("F", "F"),
     ("P", "P"),
     ("Y", "Y"),
-    ("O", "O")
+    ("O", "O"),
+    ("C", "C")
     ]
 
 ANALYTE_TYPE = [
